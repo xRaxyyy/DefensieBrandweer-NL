@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Locaties - DEFENSIEBRANDWEER NL</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="js/navbar.js"></script>
+    <script src="js/footer.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #111827;
+            background: white;
+            line-height: 1.5;
+        }
+
+        /* Locaties pagina */
+        .locations-page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 20px 50px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .page-title {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: #6b7280;
+            max-width: 500px;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .search-container {
+            position: relative;
+            flex-grow: 1;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 48px;
+            background: white;
+            border: 2px solid #f3f4f6;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 500;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: #dc2626;
+            box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            width: 20px;
+            height: 20px;
+        }
+
+        .view-switcher {
+            display: flex;
+            background: #f3f4f6;
+            padding: 6px;
+            border-radius: 20px;
+            border: 1px solid #e5e7eb;
+            width: fit-content;
+        }
+
+        .view-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 14px;
+            color: #6b7280;
+            border: none;
+            background: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .view-btn.active {
+            background: white;
+            color: #dc2626;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .filters {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            color: #9ca3af;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 2px;
+            margin-right: 8px;
+        }
+
+        .filter-btn {
+            padding: 6px 20px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 2px solid #f3f4f6;
+            background: white;
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            background: #dc2626;
+            border-color: #dc2626;
+            color: white;
+            box-shadow: 0 10px 20px rgba(220, 38, 38, 0.2);
+        }
+
+        .filter-select {
+            padding: 6px 20px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 2px solid #f3f4f6;
+            background: white;
+            color: #6b7280;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .filter-select:focus {
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        /* Custom Dropdown Styles */
+        .custom-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 6px 20px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 2px solid #f3f4f6;
+            background: white;
+            color: #6b7280;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s;
+            min-width: 160px;
+        }
+
+        .dropdown-toggle:hover {
+            border-color: #e5e7eb;
+        }
+
+        .dropdown-toggle:focus {
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        .dropdown-selected {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dropdown-arrow {
+            transition: transform 0.3s ease;
+            color: #9ca3af;
+        }
+
+        .custom-dropdown.active .dropdown-arrow {
+            transform: rotate(180deg);
+            color: #dc2626;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .custom-dropdown.active .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: #f9fafb;
+        }
+
+        .dropdown-item.active {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .dropdown-item .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+
+        .results-count {
+            margin-left: auto;
+            color: #9ca3af;
+            font-weight: 700;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Kaart weergave */
+        .map-container {
+            height: 700px;
+            border-radius: 40px;
+            border: 12px solid white;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: all 0.5s;
+        }
+
+        .map-container:hover {
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.15);
+        }
+
+        .map-legend {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            z-index: 1000;
+        }
+
+        .legend-title {
+            color: #9ca3af;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.2);
+        }
+
+        .legend-dot.red {
+            background: #dc2626;
+        }
+
+        .legend-dot.blue {
+            background: #3b82f6;
+        }
+
+        .legend-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .map-results {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            padding: 12px 24px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid #f3f4f6;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .map-results-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .map-results-label {
+            color: #dc2626;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 9px;
+            letter-spacing: 2px;
+        }
+
+        .map-results-count {
+            font-size: 18px;
+            font-weight: 900;
+            color: #111827;
+        }
+
+        .map-results-divider {
+            width: 1px;
+            height: 32px;
+            background: #e5e7eb;
+        }
+
+        .map-results-avatars {
+            display: flex;
+            margin-left: -12px;
+        }
+
+        .map-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 4px solid white;
+            object-fit: cover;
+        }
+
+        .map-avatar-more {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #f3f4f6;
+            border: 4px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: #6b7280;
+        }
+
+        /* Lijst weergave */
+        .locations-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .location-item {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            border: 1px solid #f3f4f6;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .location-item:hover {
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .location-item-image {
+            height: 224px;
+            overflow: hidden;
+            background: #f3f4f6;
+            position: relative;
+        }
+
+        .location-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s;
+        }
+
+        .location-item:hover .location-item-image img {
+            transform: scale(1.1);
+        }
+
+        .location-item-status {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 6px 16px;
+            border-radius: 9999px;
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(8px);
+        }
+
+        .status-active {
+            background: rgba(5, 150, 105, 0.9);
+        }
+
+        .status-historical {
+            background: rgba(225, 29, 72, 0.9);
+        }
+
+        .location-item-content {
+            padding: 32px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .location-item-type {
+            color: #dc2626;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 3px;
+            margin-bottom: 16px;
+        }
+
+        .location-item-name {
+            font-size: 24px;
+            font-weight: 900;
+            margin-bottom: 12px;
+            transition: color 0.3s;
+        }
+
+        .location-item:hover .location-item-name {
+            color: #dc2626;
+        }
+
+        .location-item-location {
+            display: flex;
+            align-items: center;
+            color: #6b7280;
+            font-weight: 500;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .location-item-location svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            color: #dc2626;
+            opacity: 0.5;
+        }
+
+        .location-item-footer {
+            margin-top: auto;
+            padding-top: 24px;
+            border-top: 1px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .location-item-year {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #9ca3af;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 2px;
+        }
+
+        .location-item-link {
+            color: #dc2626;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 2px;
+            transition: transform 0.3s;
+        }
+
+        .location-item:hover .location-item-link {
+            transform: translateX(8px);
+        }
+
+        /* Geen resultaten */
+        .no-results {
+            grid-column: 1 / -1;
+            padding: 80px 40px;
+            text-align: center;
+            background: white;
+            border-radius: 40px;
+            border: 4px dashed #f3f4f6;
+            box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .no-results-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(220, 38, 38, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .no-results-title {
+            font-size: 24px;
+            font-weight: 900;
+            color: #111827;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .no-results-text {
+            color: #6b7280;
+            max-width: 300px;
+            margin: 0 auto 24px;
+        }
+
+        .reset-btn {
+            color: #dc2626;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 2px;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+
+        /* Animaties */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .leaflet-container {
+            width: 100%;
+            height: 700px;
+            border-radius: 1rem;
+            z-index: 1;
+            background-color: #f3f4f6;
+        }
+        .leaflet-popup-content-wrapper {
+            border-radius: 1rem;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .leaflet-popup-content {
+            margin: 0;
+            width: 280px !important;
+        }
+
+        /* Custom Marker Style */
+        .custom-marker {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .marker-pin {
+            width: 32px;
+            height: 32px;
+            background: #dc2626;
+            border: 3px solid white;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease-in-out;
+        }
+        .marker-pin:hover {
+            background: #b91c1c;
+            transform: rotate(-45deg) scale(1.1);
+        }
+        .marker-pin::after {
+            content: '';
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            transform: rotate(45deg);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .locations-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .locations-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .map-container {
+                height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Locaties Pagina -->
+    <div class="locations-page">
+        <!-- Header -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Defensie Locaties</h1>
+                <p class="page-subtitle">Ontdek onze database van militaire brandweerkazernes, van operationele bases tot historisch erfgoed.</p>
+            </div>
+
+            <div class="controls">
+                <!-- Zoeken & View Switcher -->
+                <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                    <div class="search-container">
+                        <input type="text" 
+                               placeholder="Zoeken op kazerne, stad of type..." 
+                               class="search-input" 
+                               id="search-input">
+                        <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+
+                    <div class="view-switcher">
+                        <button class="view-btn active" data-view="list">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                            Lijst
+                        </button>
+                        <button class="view-btn" data-view="map">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7l5-2.5 5.553 2.776a1 1 0 01.447.894v10.764a1 1 0 01-1.447.894L15 17l-6 3z" />
+                            </svg>
+                            Kaart
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filters">
+                    <span class="filter-label">Filter status:</span>
+                    <button class="filter-btn active" data-filter="all">Alle</button>
+                    <button class="filter-btn" data-filter="active">Actueel</button>
+                    <button class="filter-btn" data-filter="historical">Historisch</button>
+                    
+                    <span class="filter-label" style="margin-left: 16px;">Type:</span>
+                    
+                    <!-- Custom dropdown container -->
+                    <div class="custom-dropdown" id="type-dropdown-container">
+                        <button class="dropdown-toggle" id="dropdown-toggle">
+                            <span class="dropdown-selected">
+                                <span class="legend-dot" style="background: #dc2626;"></span>
+                                Alle types
+                            </span>
+                            <svg class="dropdown-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        
+                        <div class="dropdown-menu" id="dropdown-menu">
+                            <div class="dropdown-item" data-value="">
+                                <span class="legend-dot" style="background: #dc2626;"></span>
+                                <span>Alle types</span>
+                            </div>
+                            <div class="dropdown-item" data-value="Vliegbasis">
+                                <span class="legend-dot" style="background: #dc2626;"></span>
+                                <span>Vliegbasis</span>
+                            </div>
+                            <div class="dropdown-item" data-value="Marinekazerne">
+                                <span class="legend-dot" style="background: #3b82f6;"></span>
+                                <span>Marinekazerne</span>
+                            </div>
+                            <div class="dropdown-item" data-value="Kazerne">
+                                <span class="legend-dot" style="background: #10b981;"></span>
+                                <span>Kazerne</span>
+                            </div>
+                            <div class="dropdown-item" data-value="Oefenterrein">
+                                <span class="legend-dot" style="background: #f59e0b;"></span>
+                                <span>Oefenterrein</span>
+                            </div>
+                            <div class="dropdown-item" data-value="Depot">
+                                <span class="legend-dot" style="background: #8b5cf6;"></span>
+                                <span>Depot</span>
+                            </div>
+                            <div class="dropdown-item" data-value="Hoofdkwartier">
+                                <span class="legend-dot" style="background: #ec4899;"></span>
+                                <span>Hoofdkwartier</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="results-count" id="results-count">0 Resultaten</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kaart Weergave -->
+        <div id="map-view" style="display: none; position: relative;">
+            <div class="map-container" id="map"></div>
+            
+            <div class="map-legend">
+                <h4 class="legend-title">Kaart Legenda</h4>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #dc2626;"></div>
+                    <span class="legend-label">Vliegbasis</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #3b82f6;"></div>
+                    <span class="legend-label">Marinekazerne</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #10b981;"></div>
+                    <span class="legend-label">Kazerne</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #f59e0b;"></div>
+                    <span class="legend-label">Oefenterrein</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #8b5cf6;"></div>
+                    <span class="legend-label">Depot</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #ec4899;"></div>
+                    <span class="legend-label">Hoofdkwartier</span>
+                </div>
+            </div>
+
+            <div class="map-results">
+                <div class="map-results-info">
+                    <span class="map-results-label">Gefilterd resultaat</span>
+                    <span class="map-results-count" id="map-results-count">0 Locaties</span>
+                </div>
+                <div class="map-results-divider"></div>
+                <div class="map-results-avatars" id="map-avatars">
+                    <!-- Avatars worden hier geladen -->
+                </div>
+            </div>
+
+            <!-- Geen resultaten overlay -->
+            <div id="no-map-results" style="display: none; position: absolute; inset: 0; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); border-radius: 40px; display: flex; align-items: center; justify-content: center; z-index: 1000;">
+                <div style="text-align: center; padding: 48px; background: white; border-radius: 32px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1); border: 1px solid #f3f4f6; transform: translateY(-40px);">
+                    <div style="color: #d1d5db; margin-bottom: 24px;">
+                        <svg width="64" height="64" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </div>
+                    <p style="font-size: 20px; font-weight: 900; color: #111827; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;">Geen locaties om te plotten</p>
+                    <p style="color: #6b7280; font-size: 14px; margin-bottom: 24px; max-width: 300px;">De huidige filters hebben geen resultaten opgeleverd voor de kaartweergave.</p>
+                    <button id="reset-filters" class="reset-btn">Reset Zoekopdracht</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lijst Weergave -->
+        <div id="list-view">
+            <div class="locations-list" id="locations-list">
+                <!-- Locaties worden hier geladen -->
+            </div>
+
+            <!-- Geen resultaten -->
+            <div id="no-results" class="no-results" style="display: none;">
+                <div class="no-results-icon">
+                    <svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <p class="no-results-title">Geen Locaties Gevonden</p>
+                <p class="no-results-text">Pas uw zoekopdracht of filters aan om het gewenste resultaat te vinden.</p>
+                <button id="reset-list-filters" class="reset-btn">Filters Herstellen</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // State
+    let currentView = 'list';
+    let currentFilter = 'all';
+    let searchTerm = '';
+    let currentTypeFilter = '';
+    let leafletMap = null;
+    let markers = [];
+    let allLocations = [];
+
+    // DOM elementen
+    const locationsListContainer = document.getElementById('locations-list');
+    const searchInput = document.getElementById('search-input');
+    const viewButtons = document.querySelectorAll('.view-btn');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const resultsCount = document.getElementById('results-count');
+    const mapResultsCount = document.getElementById('map-results-count');
+    const mapAvatars = document.getElementById('map-avatars');
+    const noResults = document.getElementById('no-results');
+    const noMapResults = document.getElementById('no-map-results');
+    const mapView = document.getElementById('map-view');
+    const listView = document.getElementById('list-view');
+    const mapContainer = document.getElementById('map');
+    const resetFiltersBtn = document.getElementById('reset-filters');
+    const resetListFiltersBtn = document.getElementById('reset-list-filters');
+
+    // Functie om locaties van de API op te halen
+    async function fetchLocations() {
+        try {
+            console.log('Fetching locations from API...');
+            const response = await fetch('http://localhost:3000/api/locations');
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log(`Fetched ${data.length} locations from API`);
+            return data;
+        } catch (error) {
+            console.error('Error fetching locations:', error);
+            
+            // Fallback: probeer te laden van mock data als API niet beschikbaar is
+            console.log('Using mock data as fallback');
+            return [
+                {
+                    id: 1,
+                    name: "Vliegbasis Woensdrecht",
+                    city: "Woensdrecht",
+                    province: "Noord-Brabant",
+                    type: "Vliegbasis",
+                    yearFrom: "1940",
+                    yearTo: "Heden",
+                    lat: 51.4491,
+                    lng: 4.3422,
+                    imageUrl: "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&q=80&w=1000"
+                },
+                {
+                    id: 2,
+                    name: "Kazerne Oranje",
+                    city: "Den Haag",
+                    province: "Zuid-Holland",
+                    type: "Kazerne",
+                    yearFrom: "1950",
+                    yearTo: "2005",
+                    lat: 52.0775,
+                    lng: 4.2777,
+                    imageUrl: "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&q=80&w=1000"
+                },
+                {
+                    id: 3,
+                    name: "Marinekazerne Amsterdam",
+                    city: "Amsterdam",
+                    province: "Noord-Holland",
+                    type: "Marinekazerne",
+                    yearFrom: "1965",
+                    yearTo: "Heden",
+                    lat: 52.3676,
+                    lng: 4.9041,
+                    imageUrl: "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&q=80&w=1000"
+                },
+                {
+                    id: 4,
+                    name: "Legerplaats Oirschot",
+                    city: "Oirschot",
+                    province: "Noord-Brabant",
+                    type: "Legerplaats",
+                    yearFrom: "1938",
+                    yearTo: "1995",
+                    lat: 51.5050,
+                    lng: 5.3136,
+                    imageUrl: "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&q=80&w=1000"
+                },
+                {
+                    id: 5,
+                    name: "Vliegbasis Leeuwarden",
+                    city: "Leeuwarden",
+                    province: "Friesland",
+                    type: "Vliegbasis",
+                    yearFrom: "1949",
+                    yearTo: "Heden",
+                    lat: 53.2286,
+                    lng: 5.7603,
+                    imageUrl: "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&q=80&w=1000"
+                },
+                {
+                    id: 6,
+                    name: "Kazerne Prinses Margriet",
+                    city: "Nijmegen",
+                    province: "Gelderland",
+                    type: "Kazerne",
+                    yearFrom: "1972",
+                    yearTo: "Heden",
+                    lat: 51.8425,
+                    lng: 5.8528,
+                    imageUrl: "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&q=80&w=1000"
+                }
+            ];
+        }
+    }
+
+    // Functies
+    function filterLocations() {
+        return allLocations.filter(loc => {
+            // Zoekterm filter
+            const matchesSearch = searchTerm === '' || 
+                loc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                loc.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                loc.type.toLowerCase().includes(searchTerm.toLowerCase());
+            
+            // Status filter
+            const isActive = loc.yearTo === 'Heden';
+            const matchesStatus = currentFilter === 'all' ||
+                (currentFilter === 'active' && isActive) ||
+                (currentFilter === 'historical' && !isActive);
+            
+            // Type filter (nieuw!)
+            const matchesType = currentTypeFilter === '' || 
+                loc.type === currentTypeFilter;
+            
+            return matchesSearch && matchesStatus && matchesType;
+        });
+    }
+
+    async function filterAndRenderLocations() {
+        try {
+            // Haal locaties op als we ze nog niet hebben
+            if (allLocations.length === 0) {
+                allLocations = await fetchLocations();
+            }
+            
+            const filtered = filterLocations();
+            const count = filtered.length;
+            
+            // Update results count
+            resultsCount.textContent = `${count} Resultaten`;
+            mapResultsCount.textContent = `${count} Locaties`;
+            
+            // Render lijst weergave
+            renderList(filtered);
+            
+            // Render kaart weergave
+            if (currentView === 'map') {
+                renderMap(filtered);
+            }
+            
+            // Update avatars
+            updateAvatars(filtered.slice(0, 4));
+            
+            // Toon/verberg geen resultaten
+            noResults.style.display = count === 0 ? 'block' : 'none';
+            noMapResults.style.display = count === 0 ? 'block' : 'none';
+        } catch (error) {
+            console.error('Error in filterAndRenderLocations:', error);
+            // Toon foutmelding
+            noResults.innerHTML = `
+                <div class="no-results-icon" style="background: rgba(239, 68, 68, 0.1);">
+                    <svg width="40" height="40" fill="none" stroke="#dc2626" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <p class="no-results-title">Fout bij laden locaties</p>
+                <p class="no-results-text">Kon de locaties niet laden van de server. Controleer of de API server draait.</p>
+                <button id="retry-load" class="reset-btn">Opnieuw proberen</button>
+            `;
+            noResults.style.display = 'block';
+            
+            // Voeg event listener toe voor retry button
+            document.getElementById('retry-load')?.addEventListener('click', filterAndRenderLocations);
+        }
+    }
+
+    function renderList(locations) {
+        locationsListContainer.innerHTML = '';
+        
+        locations.forEach(loc => {
+            const isActive = loc.yearTo === 'Heden';
+            
+            const item = document.createElement('div');
+            item.className = 'location-item';
+            item.onclick = () => {
+                // Redirect naar detailpagina
+                window.location.href = `locatie-detail.html?id=${loc.id}`;
+            };
+            
+            item.innerHTML = `
+                <div class="location-item-image">
+                    <img src="${loc.imageUrl}" alt="${loc.name}">
+                    <div class="location-item-status ${isActive ? 'status-active' : 'status-historical'}">
+                        ${isActive ? 'Operationeel' : 'Historisch'}
+                    </div>
+                </div>
+                <div class="location-item-content">
+                    <p class="location-item-type">${loc.type}</p>
+                    <h3 class="location-item-name">${loc.name}</h3>
+                    <div class="location-item-location">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        ${loc.city}, ${loc.province}
+                    </div>
+                    <div class="location-item-footer">
+                        <div class="location-item-year">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            ${loc.yearFrom} — ${loc.yearTo}
+                        </div>
+                        <span class="location-item-link">Details →</span>
+                    </div>
+                </div>
+            `;
+            
+            locationsListContainer.appendChild(item);
+        });
+    }
+
+    function renderMap(locations) {
+        // Verwijder bestaande kaart
+        if (leafletMap) {
+            leafletMap.remove();
+            markers = [];
+        }
+        
+        if (locations.length === 0) return;
+        
+        // Initialiseer nieuwe kaart
+        leafletMap = L.map('map').setView([52.1326, 5.2913], 7);
+        
+        // Voeg tile layer toe
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap & CARTO',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(leafletMap);
+        
+        // Voeg markers toe
+        locations.forEach(loc => {
+            // Bepaal marker kleur op basis van type
+            let markerColor = '#dc2626'; // default rood
+            
+            switch(loc.type) {
+                case 'Vliegbasis':
+                    markerColor = '#dc2626'; // rood
+                    break;
+                case 'Marinekazerne':
+                    markerColor = '#3b82f6'; // blauw
+                    break;
+                case 'Kazerne':
+                    markerColor = '#10b981'; // groen
+                    break;
+                case 'Oefenterrein':
+                    markerColor = '#f59e0b'; // amber
+                    break;
+                case 'Depot':
+                    markerColor = '#8b5cf6'; // paars
+                    break;
+                case 'Hoofdkwartier':
+                    markerColor = '#ec4899'; // roze
+                    break;
+            }
+            
+            const customIcon = L.divIcon({
+                className: 'custom-marker',
+                html: `<div class="marker-pin" style="background: ${markerColor};"></div>`,
+                iconSize: [32, 32],
+                iconAnchor: [16, 32],
+                popupAnchor: [0, -32]
+            });
+            
+            const marker = L.marker([loc.lat, loc.lng], { icon: customIcon })
+                .addTo(leafletMap)
+                .bindPopup(`
+                    <div style="padding: 0; overflow: hidden; font-family: Inter, sans-serif; border-radius: 1rem;">
+                        <div style="height: 144px; position: relative; overflow: hidden;">
+                            <img src="${loc.imageUrl}" style="width: 100%; height: 100%; object-fit: cover;" />
+                            <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding: 16px;">
+                                <p style="font-size: 10px; font-weight: bold; color: white; text-transform: uppercase; letter-spacing: 2px; margin: 0;">${loc.type}</p>
+                            </div>
+                        </div>
+                        <div style="padding: 16px; background: white;">
+                            <h4 style="font-weight: bold; font-size: 20px; margin-bottom: 4px; color: #111827; line-height: 1.2;">${loc.name}</h4>
+                            <div style="display: flex; align-items: center; color: #6b7280; font-size: 12px; margin-bottom: 8px;">
+                                <svg style="width: 12px; height: 12px; margin-right: 4px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                ${loc.city}, ${loc.province}
+                            </div>
+                            <div style="display: flex; align-items: center; color: #6b7280; font-size: 12px; margin-bottom: 16px;">
+                                <svg style="width: 12px; height: 12px; margin-right: 4px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                ${loc.yearFrom} — ${loc.yearTo}
+                            </div>
+                            <button onclick="window.location.href='locatie-detail.html?id=${loc.id}'" style="width: 100%; background: #dc2626; color: white; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 12px; text-transform: uppercase; letter-spacing: 2px; border: none; cursor: pointer; transition: background 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                                Bekijk Details
+                            </button>
+                        </div>
+                    </div>
+                `);
+            
+            markers.push([loc.lat, loc.lng]);
+        });
+        
+        // Pas bounds aan
+        if (markers.length > 0) {
+            leafletMap.fitBounds(markers, { padding: [50, 50] });
+        }
+    }
+
+    function updateAvatars(locations) {
+        mapAvatars.innerHTML = '';
+        
+        locations.forEach((loc, index) => {
+            if (index < 4) {
+                const img = document.createElement('img');
+                img.className = 'map-avatar';
+                img.src = loc.imageUrl;
+                img.alt = loc.name;
+                mapAvatars.appendChild(img);
+            }
+        });
+        
+        if (locations.length > 4) {
+            const more = document.createElement('div');
+            more.className = 'map-avatar-more';
+            more.textContent = `+${locations.length - 4}`;
+            mapAvatars.appendChild(more);
+        }
+    }
+
+    function setupEventListeners() {
+        // View switcher
+        viewButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                viewButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                currentView = btn.dataset.view;
+                
+                if (currentView === 'list') {
+                    mapView.style.display = 'none';
+                    listView.style.display = 'block';
+                } else {
+                    mapView.style.display = 'block';
+                    listView.style.display = 'none';
+                    filterAndRenderLocations();
+                }
+            });
+        });
+        
+        // Filter buttons
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                currentFilter = btn.dataset.filter;
+                filterAndRenderLocations();
+            });
+        });
+
+        // Vervang het typeFilter event listener in setupEventListeners() met:
+        const dropdownToggle = document.getElementById('dropdown-toggle');
+        const dropdownMenu = document.getElementById('dropdown-menu');
+        const dropdownItems = dropdownMenu.querySelectorAll('.dropdown-item');
+
+        dropdownToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isActive = dropdownToggle.parentElement.classList.toggle('active');
+            
+            // Close other dropdowns if any
+            document.querySelectorAll('.custom-dropdown').forEach(dropdown => {
+                if (dropdown !== dropdownToggle.parentElement) {
+                    dropdown.classList.remove('active');
+                }
+            });
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                dropdownToggle.parentElement.classList.remove('active');
+            }
+        });
+
+        dropdownItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const value = item.dataset.value;
+                const label = item.querySelector('span:last-child').textContent;
+                const color = item.querySelector('.legend-dot').style.background;
+                
+                // Update selected display
+                dropdownToggle.querySelector('.dropdown-selected').innerHTML = `
+                    <span class="legend-dot" style="${color ? 'background: ' + color : ''}"></span>
+                    ${label}
+                `;
+                
+                // Update active state
+                dropdownItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                
+                // Update filter
+                currentTypeFilter = value;
+                filterAndRenderLocations();
+                
+                // Close dropdown
+                dropdownToggle.parentElement.classList.remove('active');
+            });
+        });
+        
+        // Search input
+        searchInput.addEventListener('input', (e) => {
+            searchTerm = e.target.value;
+            filterAndRenderLocations();
+        });
+        
+        // Reset filters
+        resetFiltersBtn?.addEventListener('click', resetFilters);
+        resetListFiltersBtn?.addEventListener('click', resetFilters);
+    }
+
+    function resetFilters() {
+        searchInput.value = '';
+        searchTerm = '';
+        
+        filterButtons.forEach(b => {
+            b.classList.remove('active');
+            if (b.dataset.filter === 'all') {
+                b.classList.add('active');
+            }
+        });
+        currentFilter = 'all';
+        
+        filterAndRenderLocations();
+    }
+
+    // Initialisatie
+    document.addEventListener('DOMContentLoaded', () => {
+        filterAndRenderLocations();
+        setupEventListeners();
+    });
+</script>
+</body>
+</html>

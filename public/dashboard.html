@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - DEFENSIEBRANDWEER NL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="js/navbar.js"></script>
+    <script src="js/footer.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+
+        /* Dashboard Page */
+        .dashboard-page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 20px 50px;
+        }
+
+        .page-header {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 48px;
+            font-weight: 900;
+            color: #111827;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            border-bottom: 4px solid #dc2626;
+            display: inline-block;
+        }
+
+        .page-subtitle {
+            font-size: 18px;
+            color: #6b7280;
+            margin-top: 8px;
+        }
+
+        /* Tabs */
+        .tabs-container {
+            display: flex;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 32px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .tab-btn {
+            padding: 16px 32px;
+            font-weight: 900;
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 4px solid transparent;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        .tab-btn:hover {
+            color: #6b7280;
+        }
+
+        .tab-btn.active {
+            color: #dc2626;
+            border-bottom-color: #dc2626;
+        }
+
+        /* Table Container */
+        .table-container {
+            background: white;
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f3f4f6;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        .table thead {
+            background: #f9fafb;
+        }
+
+        .table th {
+            padding: 20px 32px;
+            text-align: left;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: #6b7280;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .table tbody tr {
+            border-bottom: 1px solid #f3f4f6;
+            transition: background-color 0.3s;
+        }
+
+        .table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .table td {
+            padding: 24px 32px;
+            vertical-align: middle;
+        }
+
+        .item-preview {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .item-image {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .item-info h4 {
+            font-weight: 900;
+            font-size: 16px;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .item-info .type {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(220, 38, 38, 0.1);
+            color: #dc2626;
+            border-radius: 9999px;
+            font-weight: 900;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .year-display {
+            font-weight: 700;
+            color: #6b7280;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: flex-end;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .edit-btn {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #2563eb;
+        }
+
+        .delete-btn {
+            background: #ef4444;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #dc2626;
+        }
+
+        /* Add Button */
+        .add-button-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 24px;
+        }
+
+        .add-btn {
+            background: #dc2626;
+            color: white;
+            padding: 16px 32px;
+            border-radius: 16px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 2px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.2);
+        }
+
+        .add-btn:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(220, 38, 38, 0.3);
+        }
+
+        .add-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 2000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 40px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            padding: 32px;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-title {
+            font-size: 32px;
+            font-weight: 900;
+            color: #111827;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: #f3f4f6;
+            color: #dc2626;
+        }
+
+        .modal-body {
+            padding: 32px;
+        }
+
+        /* Image Upload Section */
+        .image-upload-section {
+            margin-bottom: 40px;
+        }
+
+        .upload-label {
+            display: block;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: #6b7280;
+            margin-bottom: 16px;
+        }
+
+        .image-preview {
+            position: relative;
+            width: 100%;
+            height: 320px;
+            background: #f9fafb;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 4px solid white;
+            box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e5e7eb;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-actions {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .image-preview:hover .image-actions {
+            opacity: 1;
+        }
+
+        .upload-btn, .remove-btn {
+            padding: 16px 32px;
+            border-radius: 16px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .upload-btn {
+            background: white;
+            color: #111827;
+        }
+
+        .upload-btn:hover {
+            background: #dc2626;
+            color: white;
+        }
+
+        .remove-btn {
+            background: #dc2626;
+            color: white;
+        }
+
+        .remove-btn:hover {
+            background: #b91c1c;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-note {
+            text-align: center;
+            font-size: 10px;
+            color: #9ca3af;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        /* Gallery Section */
+        .gallery-section {
+            background: #f9fafb;
+            padding: 32px;
+            border-radius: 24px;
+            margin-bottom: 40px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 24px;
+        }
+
+        .gallery-title {
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: #111827;
+        }
+
+        .gallery-subtitle {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .add-gallery-btn {
+            background: #111827;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 2px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .add-gallery-btn:hover {
+            background: #dc2626;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+        }
+
+        .gallery-item {
+            aspect-ratio: 1;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            border: 2px solid white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-gallery-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #ef4444;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .gallery-item:hover .remove-gallery-btn {
+            opacity: 1;
+        }
+
+        .empty-gallery {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            border: 2px dashed #d1d5db;
+            border-radius: 16px;
+            color: #9ca3af;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 2px;
+        }
+
+        /* Form Fields */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .form-full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: #6b7280;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            padding: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .save-button {
+            width: 100%;
+            background: #dc2626;
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 2px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(220, 38, 38, 0.2);
+        }
+
+        .save-button:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(220, 38, 38, 0.3);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 36px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-title {
+                font-size: 28px;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigatie -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">DEFENSIE<span>BRANDWEER</span> NL</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="locaties.html">Locaties</a>
+                <a href="equipment.html">Materieel</a>
+                <a href="dashboard.html" class="active">Dashboard</a>
+                <a href="#">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Page -->
+    <div class="dashboard-page">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Dashboard</h1>
+            <p class="page-subtitle">Beheer alle data van het platform vanuit één overzicht.</p>
+        </div>
+
+        <!-- Add Button -->
+        <div class="add-button-container">
+            <button class="add-btn" id="addBtn">
+                + Nieuwe Toevoegen
+            </button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs-container">
+            <button class="tab-btn active" data-tab="locations">Locatie Beheer</button>
+            <button class="tab-btn" data-tab="equipment">Materieel Beheer</button>
+        </div>
+
+        <!-- Tables -->
+        <div class="table-container" id="tableContainer">
+            <!-- Tables worden hier geladen via JavaScript -->
+        </div>
+    </div>
+
+    <!-- Modal voor bewerken/toevoegen -->
+    <div class="modal-overlay" id="modalOverlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Item Beheer</h2>
+                <button class="modal-close" id="modalClose">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulier wordt hier geladen via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+
+<script>
+// Configuratie
+const API_BASE_URL = 'http://localhost:3000/api';
+let activeTab = 'locations';
+let editingItem = null;
+let isEditing = false;
+let currentImageFilename = null;
+
+// DOM elements
+const tableContainer = document.getElementById('tableContainer');
+const modalOverlay = document.getElementById('modalOverlay');
+const modalTitle = document.getElementById('modalTitle');
+const modalClose = document.getElementById('modalClose');
+const modalBody = document.querySelector('.modal-body');
+const addBtn = document.getElementById('addBtn');
+const tabBtns = document.querySelectorAll('.tab-btn');
+
+// Custom confirm dialog functie
+window.showConfirmDialog = function(message, onConfirm, onCancel = null) {
+    // Verwijder bestaande dialoog als die er is
+    const existingDialog = document.getElementById('customConfirmDialog');
+    if (existingDialog) {
+        existingDialog.remove();
+    }
+
+    const dialog = document.createElement('div');
+    dialog.id = 'customConfirmDialog';
+    dialog.innerHTML = `
+        <div class="confirm-overlay">
+            <div class="confirm-dialog">
+                <div class="confirm-header">
+                    <h3>Bevestiging</h3>
+                    <button class="confirm-close">&times;</button>
+                </div>
+                <div class="confirm-body">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.698-.833-2.464 0L4.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                    </svg>
+                    <p>${message}</p>
+                </div>
+                <div class="confirm-actions">
+                    <button class="confirm-btn confirm-no">Annuleren</button>
+                    <button class="confirm-btn confirm-yes">Ja, Verwijderen</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Styling toevoegen
+    const style = document.createElement('style');
+    if (!document.getElementById('confirm-dialog-styles')) {
+        style.id = 'confirm-dialog-styles';
+        style.textContent = `
+            .confirm-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.8);
+                backdrop-filter: blur(8px);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                animation: fadeIn 0.3s ease-out;
+                padding: 20px;
+            }
+            
+            .confirm-dialog {
+                background: white;
+                border-radius: 24px;
+                width: 100%;
+                max-width: 400px;
+                overflow: hidden;
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+                animation: slideUp 0.3s ease-out;
+            }
+            
+            .confirm-header {
+                padding: 24px 24px 16px;
+                border-bottom: 1px solid #f3f4f6;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background: white;
+            }
+            
+            .confirm-header h3 {
+                font-size: 20px;
+                font-weight: 900;
+                color: #111827;
+                margin: 0;
+                text-transform: uppercase;
+                letter-spacing: -0.5px;
+            }
+            
+            .confirm-close {
+                background: none;
+                border: none;
+                font-size: 24px;
+                color: #9ca3af;
+                cursor: pointer;
+                padding: 0;
+                width: 32px;
+                height: 32px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                transition: all 0.3s;
+            }
+            
+            .confirm-close:hover {
+                background: #f3f4f6;
+                color: #dc2626;
+            }
+            
+            .confirm-body {
+                padding: 32px 24px;
+                text-align: center;
+            }
+            
+            .confirm-body svg {
+                margin-bottom: 20px;
+            }
+            
+            .confirm-body p {
+                font-size: 16px;
+                color: #4b5563;
+                line-height: 1.5;
+                margin: 0;
+            }
+            
+            .confirm-actions {
+                padding: 16px 24px 24px;
+                display: flex;
+                gap: 12px;
+                border-top: 1px solid #f3f4f6;
+            }
+            
+            .confirm-btn {
+                flex: 1;
+                padding: 16px;
+                border-radius: 12px;
+                font-weight: 900;
+                text-transform: uppercase;
+                font-size: 12px;
+                letter-spacing: 1px;
+                cursor: pointer;
+                transition: all 0.3s;
+                border: none;
+            }
+            
+            .confirm-no {
+                background: #f3f4f6;
+                color: #4b5563;
+            }
+            
+            .confirm-no:hover {
+                background: #e5e7eb;
+            }
+            
+            .confirm-yes {
+                background: #dc2626;
+                color: white;
+            }
+            
+            .confirm-yes:hover {
+                background: #b91c1c;
+            }
+            
+            @keyframes slideUp {
+                from {
+                    transform: translateY(20px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    document.body.appendChild(dialog);
+
+    // Event listeners
+    const closeBtn = dialog.querySelector('.confirm-close');
+    const noBtn = dialog.querySelector('.confirm-no');
+    const yesBtn = dialog.querySelector('.confirm-yes');
+
+    const closeDialog = () => {
+        dialog.remove();
+    };
+
+    closeBtn.addEventListener('click', () => {
+        closeDialog();
+        if (onCancel) onCancel();
+    });
+
+    noBtn.addEventListener('click', () => {
+        closeDialog();
+        if (onCancel) onCancel();
+    });
+
+    yesBtn.addEventListener('click', () => {
+        closeDialog();
+        onConfirm();
+    });
+
+    // Sluiten op ESC
+    const handleEsc = (e) => {
+        if (e.key === 'Escape') {
+            closeDialog();
+            if (onCancel) onCancel();
+            document.removeEventListener('keydown', handleEsc);
+        }
+    };
+
+    document.addEventListener('keydown', handleEsc);
+};
+
+// SVG placeholder functie
+function getPlaceholderImage(type, text = 'Upload Afbeelding') {
+    // Bepaal titel op basis van type
+    let title = text;
+    let subtitle = 'Klik op "Bestand Kiezen" om te uploaden';
+    
+    if (type === 'locatie') {
+        title = text === 'Upload Afbeelding' ? 'Locatie Afbeelding' : text;
+        subtitle = 'Toont na upload';
+    } else if (type === 'materieel') {
+        title = text === 'Upload Afbeelding' ? 'Materieel Afbeelding' : text;
+        subtitle = 'Toont na upload';
+    }
+
+    const svgTemplate = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+            <rect width="800" height="600" fill="#f9fafb"/>
+            <rect x="50" y="50" width="700" height="500" rx="16" fill="#e5e7eb" stroke="#d1d5db" stroke-width="2"/>
+            
+            <!-- Icoon -->
+            <g transform="translate(400, 250)">
+                <circle r="60" fill="#d1d5db"/>
+                <path d="M-30,-15 L30,-15 L15,25 L0,15 L-15,25 Z" fill="#9ca3af"/>
+                <circle cx="-20" cy="-5" r="8" fill="#6b7280"/>
+                <circle cx="20" cy="-5" r="8" fill="#6b7280"/>
+            </g>
+            
+            <!-- Tekst -->
+            <text x="400" y="450" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" fill="#6b7280" font-weight="bold">
+                ${title}
+            </text>
+            <text x="400" y="490" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#9ca3af">
+                ${subtitle}
+            </text>
+        </svg>
+    `;
+    
+    // Converteer SVG naar data URL
+    const svgBlob = new Blob([svgTemplate], {type: 'image/svg+xml;charset=utf-8'});
+    return URL.createObjectURL(svgBlob);
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+    setupEventListeners();
+});
+
+// Laad data van server
+async function loadData() {
+    try {
+        showLoading();
+        const response = await fetch(`${API_BASE_URL}/${activeTab}`);
+        if (!response.ok) throw new Error('Netwerk fout');
+        const data = await response.json();
+        loadTable(data);
+    } catch (error) {
+        console.error('Fout bij laden data:', error);
+        showError('Kon data niet laden van server');
+    }
+}
+
+// Toon laad indicator
+function showLoading() {
+    tableContainer.innerHTML = `
+        <div style="text-align: center; padding: 60px; color: #6b7280; background: white; border-radius: 32px; box-shadow: 0 20px 50px rgba(0,0,0,0.08);">
+            <div style="margin-bottom: 20px;">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                </svg>
+            </div>
+            <p>Data laden...</p>
+        </div>
+    `;
+}
+
+// Toon foutmelding
+function showError(message) {
+    tableContainer.innerHTML = `
+        <div style="text-align: center; padding: 40px; color: #dc2626; background: white; border-radius: 32px; box-shadow: 0 20px 50px rgba(0,0,0,0.08);">
+            <h3 style="margin-bottom: 10px;">Fout</h3>
+            <p>${message}</p>
+            <button onclick="loadData()" style="margin-top: 20px; padding: 10px 20px; background: #dc2626; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                Opnieuw proberen
+            </button>
+        </div>
+    `;
+}
+
+// Laad tabel met data
+function loadTable(items) {
+    if (activeTab === 'locations') {
+        loadLocationsTable(items);
+        addBtn.textContent = '+ Nieuwe Locatie';
+    } else {
+        loadEquipmentTable(items);
+        addBtn.textContent = '+ Nieuw Materieel';
+    }
+}
+
+// Load locations table
+function loadLocationsTable(locations) {
+    if (!locations || locations.length === 0) {
+        tableContainer.innerHTML = `
+            <div style="text-align: center; padding: 60px; color: #6b7280; background: white; border-radius: 32px; box-shadow: 0 20px 50px rgba(0,0,0,0.08);">
+                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" style="margin-bottom: 20px;">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                </svg>
+                <h3 style="margin-bottom: 10px; color: #111827;">Geen locaties gevonden</h3>
+                <p>Voeg je eerste locatie toe met de knop hierboven.</p>
+            </div>
+        `;
+        return;
+    }
+
+    let tableHTML = `
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Naam / Info</th>
+                    <th>Plaats</th>
+                    <th>Periode</th>
+                    <th style="text-align: right;">Acties</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    locations.forEach(loc => {
+        // Bepaal afbeelding voor tabel
+        let displayImage;
+        if (loc.imageUrl && loc.imageUrl.includes('/uploads/')) {
+            displayImage = loc.imageUrl;
+        } else {
+            displayImage = getPlaceholderImage('locatie', 'Geen Afbeelding');
+        }
+        
+        tableHTML += `
+            <tr>
+                <td>
+                    <div class="item-preview">
+                        <div class="item-image">
+                            <img src="${displayImage}" alt="${loc.name}" onerror="this.src='${getPlaceholderImage('locatie', 'Fout bij laden')}'">
+                        </div>
+                        <div class="item-info">
+                            <h4>${loc.name}</h4>
+                            <div class="type">${loc.type || 'Niet gespecificeerd'}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>${loc.city || ''}</td>
+                <td class="year-display">${loc.yearFrom || '?'} - ${loc.yearTo || 'Heden'}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="edit-btn" onclick="editItem('${loc.id}')">Aanpassen</button>
+                        <button class="delete-btn" onclick="deleteItem('${loc.id}')">Verwijderen</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+
+    tableHTML += `
+            </tbody>
+        </table>
+    `;
+
+    tableContainer.innerHTML = tableHTML;
+}
+
+// Load equipment table
+function loadEquipmentTable(equipment) {
+    if (!equipment || equipment.length === 0) {
+        tableContainer.innerHTML = `
+            <div style="text-align: center; padding: 60px; color: #6b7280; background: white; border-radius: 32px; box-shadow: 0 20px 50px rgba(0,0,0,0.08);">
+                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" style="margin-bottom: 20px;">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <h3 style="margin-bottom: 10px; color: #111827;">Geen materieel gevonden</h3>
+                <p>Voeg je eerste materieel toe met de knop hierboven.</p>
+            </div>
+        `;
+        return;
+    }
+
+    let tableHTML = `
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Naam / Info</th>
+                    <th>Categorie</th>
+                    <th>Jaar</th>
+                    <th style="text-align: right;">Acties</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    equipment.forEach(eq => {
+        // Bepaal afbeelding voor tabel
+        let displayImage;
+        if (eq.imageUrl && eq.imageUrl.includes('/uploads/')) {
+            displayImage = eq.imageUrl;
+        } else {
+            displayImage = getPlaceholderImage('materieel', 'Geen Afbeelding');
+        }
+        
+        tableHTML += `
+            <tr>
+                <td>
+                    <div class="item-preview">
+                        <div class="item-image">
+                            <img src="${displayImage}" alt="${eq.name}" onerror="this.src='${getPlaceholderImage('materieel', 'Fout bij laden')}'">
+                        </div>
+                        <div class="item-info">
+                            <h4>${eq.name}</h4>
+                        </div>
+                    </div>
+                </td>
+                <td><span class="category-badge">${eq.category || 'Onbekend'}</span></td>
+                <td class="year-display">${eq.year || '?'}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="edit-btn" onclick="editItem('${eq.id}')">Aanpassen</button>
+                        <button class="delete-btn" onclick="deleteItem('${eq.id}')">Verwijderen</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+
+    tableHTML += `
+            </tbody>
+        </table>
+    `;
+
+    tableContainer.innerHTML = tableHTML;
+}
+
+// Setup event listeners
+function setupEventListeners() {
+    // Tab buttons
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeTab = btn.dataset.tab;
+            loadData();
+        });
+    });
+
+    // Add button
+    addBtn.addEventListener('click', () => {
+        editingItem = null;
+        isEditing = false;
+        currentImageFilename = null;
+        showModal();
+    });
+
+    // Modal close
+    modalClose.addEventListener('click', closeModal);
+
+    // Close modal on overlay click
+    modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) {
+            closeModal();
+        }
+    });
+
+    // Escape key to close modal
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modalOverlay.style.display === 'flex') {
+            closeModal();
+        }
+    });
+}
+
+// Show modal with form
+function showModal() {
+    modalTitle.textContent = isEditing ? 'Item Bewerken' : 'Nieuw Item Toevoegen';
+    loadModalForm();
+    modalOverlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+// Close modal
+function closeModal() {
+    modalOverlay.style.display = 'none';
+    document.body.style.overflow = 'auto';
+    editingItem = null;
+    isEditing = false;
+    currentImageFilename = null;
+}
+
+// Load modal form
+function loadModalForm() {
+    if (activeTab === 'locations') {
+        loadLocationForm();
+    } else {
+        loadEquipmentForm();
+    }
+}
+
+// Extract filename from URL
+function extractFilenameFromUrl(url) {
+    if (!url) return null;
+    if (url.includes('/uploads/')) {
+        return url.split('/uploads/')[1];
+    }
+    return null;
+}
+
+// Load location form
+function loadLocationForm() {
+    const item = editingItem || {
+        id: generateId(),
+        name: '',
+        type: '',
+        city: '',
+        province: '',
+        yearFrom: '',
+        yearTo: 'Heden',
+        imageUrl: '',
+        description: '',
+        galleryImages: []
+    };
+
+    // Extract current filename if editing
+    if (isEditing && item.imageUrl && item.imageUrl.includes('/uploads/')) {
+        currentImageFilename = extractFilenameFromUrl(item.imageUrl);
+    } else {
+        currentImageFilename = null;
+    }
+
+    // Bepaal welke afbeelding te tonen
+    let displayImage;
+    if (isEditing && item.imageUrl && item.imageUrl.includes('/uploads/')) {
+        displayImage = item.imageUrl;
+    } else {
+        displayImage = getPlaceholderImage('locatie');
+    }
+
+    modalBody.innerHTML = `
+        <div class="image-upload-section">
+            <label class="upload-label">Hoofdafbeelding</label>
+            <div class="image-preview" id="imagePreview">
+                <img src="${displayImage}" alt="Preview" id="previewImage">
+                <div class="image-actions">
+                    <button type="button" class="upload-btn" onclick="document.getElementById('imageUpload').click()">Bestand Kiezen</button>
+                    ${item.imageUrl && item.imageUrl.includes('/uploads/') ? 
+                        `<button type="button" class="remove-btn" onclick="deleteCurrentImage()">Verwijderen</button>` : 
+                        `<button type="button" class="remove-btn" onclick="removeMainImage()">Resetten</button>`
+                    }
+                </div>
+            </div>
+            <input type="file" class="file-input" id="imageUpload" accept="image/*" onchange="handleImageUpload(event, 'main')">
+            <p class="upload-note" id="uploadStatus">
+                * Kies een afbeelding (max. 5MB). Wordt automatisch geüpload.
+            </p>
+            ${currentImageFilename ? 
+                `<p style="font-size: 10px; color: #666; margin-top: 5px;">
+                    Huidig bestand: ${currentImageFilename}
+                </p>` : ''
+            }
+        </div>
+
+        <div class="form-grid">
+            <div class="form-full">
+                <div class="form-group">
+                    <label class="form-label">Naam Basis / Kazerne *</label>
+                    <input type="text" class="form-input" id="nameInput" value="${item.name}" placeholder="Bijv. Vliegbasis Leeuwarden" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Plaats *</label>
+                <input type="text" class="form-input" id="cityInput" value="${item.city}" required>
+            </div>
+
+            
+            <div class="form-group">
+                <label class="form-label">Provincie</label>
+                <select class="form-select" id="provinceInput">
+                    <option value="">Selecteer provincie</option>
+                    <option value="Noord-Holland" ${item.province === 'Noord-Holland' ? 'selected' : ''}>Noord-Holland</option>
+                    <option value="Zuid-Holland" ${item.province === 'Zuid-Holland' ? 'selected' : ''}>Zuid-Holland</option>
+                    <option value="Utrecht" ${item.province === 'Utrecht' ? 'selected' : ''}>Utrecht</option>
+                    <option value="Noord-Brabant" ${item.province === 'Noord-Brabant' ? 'selected' : ''}>Noord-Brabant</option>
+                    <option value="Gelderland" ${item.province === 'Gelderland' ? 'selected' : ''}>Gelderland</option>
+                    <option value="Overijssel" ${item.province === 'Overijssel' ? 'selected' : ''}>Overijssel</option>
+                    <option value="Flevoland" ${item.province === 'Flevoland' ? 'selected' : ''}>Flevoland</option>
+                    <option value="Drenthe" ${item.province === 'Drenthe' ? 'selected' : ''}>Drenthe</option>
+                    <option value="Friesland" ${item.province === 'Friesland' ? 'selected' : ''}>Friesland</option>
+                    <option value="Groningen" ${item.province === 'Groningen' ? 'selected' : ''}>Groningen</option>
+                    <option value="Zeeland" ${item.province === 'Zeeland' ? 'selected' : ''}>Zeeland</option>
+                    <option value="Limburg" ${item.province === 'Limburg' ? 'selected' : ''}>Limburg</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Breedtegraad *</label>
+                <input type="number" step="any" class="form-input" id="latInput" 
+                    value="${item.lat || ''}" 
+                    placeholder="Bijv. 52.1326" 
+                    min="-90" max="90" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Lengtegraad *</label>
+                <input type="number" step="any" class="form-input" id="lngInput" 
+                    value="${item.lng || ''}" 
+                    placeholder="Bijv. 5.2913" 
+                    min="-180" max="180" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Type Faciliteit *</label>
+                <select class="form-select" id="typeInput" required>
+                    <option value="">Selecteer type</option>
+                    <option value="Vliegbasis" ${item.type === 'Vliegbasis' ? 'selected' : ''}>Vliegbasis</option>
+                    <option value="Marinekazerne" ${item.type === 'Marinekazerne' ? 'selected' : ''}>Marinekazerne</option>
+                    <option value="Kazerne" ${item.type === 'Kazerne' ? 'selected' : ''}>Kazerne</option>
+                    <option value="Oefenterrein" ${item.type === 'Oefenterrein' ? 'selected' : ''}>Oefenterrein</option>
+                    <option value="Depot" ${item.type === 'Depot' ? 'selected' : ''}>Depot</option>
+                    <option value="Hoofdkwartier" ${item.type === 'Hoofdkwartier' ? 'selected' : ''}>Hoofdkwartier</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Van jaar *</label>
+                <input type="number" class="form-input" id="yearFromInput" value="${item.yearFrom}" min="1900" max="2100" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Tot jaar</label>
+                <input type="text" class="form-input" id="yearToInput" value="${item.yearTo}" placeholder="Heden">
+            </div>
+            
+            <div class="form-full">
+                <div class="form-group">
+                    <label class="form-label">Beschrijving</label>
+                    <textarea class="form-textarea" id="descriptionInput" rows="4" placeholder="Historische informatie over deze locatie...">${item.description || ''}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 16px; margin-top: 24px;">
+            <button class="save-button" onclick="saveItem()" style="flex: 1;">
+                ${isEditing ? 'Wijzigingen Opslaan' : 'Locatie Toevoegen'}
+            </button>
+            <button type="button" onclick="closeModal()" style="padding: 20px; border-radius: 16px; background: #f3f4f6; color: #111827; border: none; cursor: pointer; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;">
+                Annuleren
+            </button>
+        </div>
+    `;
+}
+
+// Load equipment form
+function loadEquipmentForm() {
+    const item = editingItem || {
+        id: generateId(),
+        name: '',
+        category: 'Blusmiddelen',
+        year: new Date().getFullYear().toString(),
+        imageUrl: '',
+        description: '',
+        technicalSpecs: []
+    };
+
+    // Extract current filename if editing
+    if (isEditing && item.imageUrl && item.imageUrl.includes('/uploads/')) {
+        currentImageFilename = extractFilenameFromUrl(item.imageUrl);
+    } else {
+        currentImageFilename = null;
+    }
+
+    // Bepaal welke afbeelding te tonen
+    let displayImage;
+    if (isEditing && item.imageUrl && item.imageUrl.includes('/uploads/')) {
+        displayImage = item.imageUrl;
+    } else {
+        displayImage = getPlaceholderImage('materieel');
+    }
+
+    modalBody.innerHTML = `
+        <div class="image-upload-section">
+            <label class="upload-label">Hoofdafbeelding</label>
+            <div class="image-preview" id="imagePreview">
+                <img src="${displayImage}" alt="Preview" id="previewImage">
+                <div class="image-actions">
+                    <button type="button" class="upload-btn" onclick="document.getElementById('imageUpload').click()">Bestand Kiezen</button>
+                    ${item.imageUrl && item.imageUrl.includes('/uploads/') ? 
+                        `<button type="button" class="remove-btn" onclick="deleteCurrentImage()">Verwijderen</button>` : 
+                        `<button type="button" class="remove-btn" onclick="removeMainImage()">Resetten</button>`
+                    }
+                </div>
+            </div>
+            <input type="file" class="file-input" id="imageUpload" accept="image/*" onchange="handleImageUpload(event, 'main')">
+            <p class="upload-note" id="uploadStatus">
+                * Kies een afbeelding (max. 5MB). Wordt automatisch geüpload.
+            </p>
+            ${currentImageFilename ? 
+                `<p style="font-size: 10px; color: #666; margin-top: 5px;">
+                    Huidig bestand: ${currentImageFilename}
+                </p>` : ''
+            }
+        </div>
+
+        <div class="form-grid">
+            <div class="form-full">
+                <div class="form-group">
+                    <label class="form-label">Naam Materieel *</label>
+                    <input type="text" class="form-input" id="nameInput" value="${item.name}" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Categorie *</label>
+                <select class="form-select" id="categoryInput" required>
+                    <option value="Blusmiddelen" ${item.category === 'Blusmiddelen' ? 'selected' : ''}>Blusmiddelen</option>
+                    <option value="Voertuigen" ${item.category === 'Voertuigen' ? 'selected' : ''}>Voertuigen</option>
+                    <option value="Persoonlijke Bescherming" ${item.category === 'Persoonlijke Bescherming' ? 'selected' : ''}>Persoonlijke Bescherming</option>
+                    <option value="Communicatie" ${item.category === 'Communicatie' ? 'selected' : ''}>Communicatie</option>
+                    <option value="Gereedschap" ${item.category === 'Gereedschap' ? 'selected' : ''}>Gereedschap</option>
+                    <option value="Overig" ${item.category === 'Overig' ? 'selected' : ''}>Overig</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Jaar *</label>
+                <input type="number" class="form-input" id="yearInput" value="${item.year}" min="1900" max="2100" required>
+            </div>
+            
+            <div class="form-full">
+                <div class="form-group">
+                    <label class="form-label">Beschrijving</label>
+                    <textarea class="form-textarea" id="descriptionInput" rows="4" placeholder="Technische specificaties en informatie...">${item.description || ''}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 16px; margin-top: 24px;">
+            <button class="save-button" onclick="saveItem()" style="flex: 1;">
+                ${isEditing ? 'Wijzigingen Opslaan' : 'Materieel Toevoegen'}
+            </button>
+            <button type="button" onclick="closeModal()" style="padding: 20px; border-radius: 16px; background: #f3f4f6; color: #111827; border: none; cursor: pointer; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;">
+                Annuleren
+            </button>
+        </div>
+    `;
+}
+
+// Handle image upload
+window.handleImageUpload = async function(event, type) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Check file size
+    if (file.size > 5 * 1024 * 1024) { // 5MB
+        showNotification('Bestand is te groot. Kies een afbeelding kleiner dan 5MB.', 'error');
+        event.target.value = '';
+        return;
+    }
+
+    // Check file type
+    if (!file.type.match('image.*')) {
+        showNotification('Alleen afbeeldingen zijn toegestaan.', 'error');
+        event.target.value = '';
+        return;
+    }
+
+    // Toon tijdelijke preview
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const previewImage = document.getElementById('previewImage');
+        previewImage.src = e.target.result;
+        document.getElementById('uploadStatus').textContent = 'Uploaden...';
+    };
+    reader.readAsDataURL(file);
+
+    // Upload naar server
+    try {
+        const formData = new FormData();
+        formData.append('image', file);
+
+        const response = await fetch(`${API_BASE_URL}/upload`, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || 'Upload mislukt');
+        }
+
+        const result = await response.json();
+        console.log('Upload succesvol:', result.imageUrl);
+        
+        // Update preview met server URL
+        const previewImage = document.getElementById('previewImage');
+        previewImage.src = result.imageUrl;
+        
+        // Update current filename
+        currentImageFilename = result.filename;
+        
+        // Update filename display
+        const filenameDisplay = document.querySelector('.image-upload-section p:last-child');
+        if (filenameDisplay) {
+            filenameDisplay.innerHTML = `Huidig bestand: ${result.filename}`;
+        } else {
+            // Maak nieuwe display als die er nog niet is
+            const uploadNote = document.querySelector('.upload-note');
+            const newDisplay = document.createElement('p');
+            newDisplay.style.cssText = 'font-size: 10px; color: #666; margin-top: 5px;';
+            newDisplay.innerHTML = `Huidig bestand: ${result.filename}`;
+            uploadNote.parentNode.insertBefore(newDisplay, uploadNote.nextSibling);
+        }
+        
+        // Toon succesmelding
+        showNotification('Afbeelding succesvol geüpload', 'success');
+        document.getElementById('uploadStatus').textContent = '* Upload voltooid!';
+        
+    } catch (error) {
+        console.error('Upload error:', error);
+        showNotification(`Upload mislukt: ${error.message}`, 'error');
+        document.getElementById('uploadStatus').textContent = '* Upload mislukt';
+        
+        // Reset preview naar placeholder
+        removeMainImage();
+        currentImageFilename = null;
+        
+        event.target.value = '';
+    }
+};
+
+// Remove main image
+window.removeMainImage = function() {
+    const previewImage = document.getElementById('previewImage');
+    
+    // Gebruik de SVG placeholder
+    const placeholderType = activeTab === 'locations' ? 'locatie' : 'materieel';
+    previewImage.src = getPlaceholderImage(placeholderType);
+    currentImageFilename = null;
+    
+    // Update filename display
+    const filenameDisplay = document.querySelector('.image-upload-section p:last-child');
+    if (filenameDisplay && !filenameDisplay.classList.contains('upload-note')) {
+        filenameDisplay.remove();
+    }
+    
+    document.getElementById('uploadStatus').textContent = '* Geen afbeelding geselecteerd';
+};
+
+// Delete current image from server
+window.deleteCurrentImage = async function() {
+    if (!currentImageFilename) {
+        removeMainImage();
+        return;
+    }
+
+    showConfirmDialog(
+        'Weet u zeker dat u deze afbeelding wilt verwijderen van de server?',
+        async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/upload/${currentImageFilename}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Verwijderen mislukt');
+                }
+
+                // Reset preview naar placeholder
+                removeMainImage();
+                
+                showNotification('Afbeelding succesvol verwijderd', 'success');
+            } catch (error) {
+                console.error('Delete image error:', error);
+                showNotification(`Verwijderen mislukt: ${error.message}`, 'error');
+            }
+        },
+        () => {
+            console.log('Verwijderen geannuleerd');
+        }
+    );
+};
+
+// Generate unique ID
+function generateId() {
+    return 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
+// Edit item
+window.editItem = async function(id) {
+    try {
+        showLoadingInModal();
+        const response = await fetch(`${API_BASE_URL}/${activeTab}/${id}`);
+        if (!response.ok) throw new Error('Item niet gevonden');
+        editingItem = await response.json();
+        isEditing = true;
+        showModal();
+    } catch (error) {
+        console.error('Fout bij laden item:', error);
+        showNotification('Kon item niet laden voor bewerking', 'error');
+    }
+};
+
+// Show loading in modal
+function showLoadingInModal() {
+    modalBody.innerHTML = `
+        <div style="text-align: center; padding: 60px; color: #6b7280;">
+            <div style="margin-bottom: 20px;">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+                </svg>
+            </div>
+            <p>Item laden...</p>
+        </div>
+    `;
+}
+
+// Delete item
+window.deleteItem = async function(id) {
+    showConfirmDialog(
+        'Weet u zeker dat u dit item wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.',
+        async () => {
+            try {
+                // Haal eerst het item op om de bijbehorende afbeelding te verwijderen
+                const itemResponse = await fetch(`${API_BASE_URL}/${activeTab}/${id}`);
+                if (itemResponse.ok) {
+                    const item = await itemResponse.json();
+                    
+                    // Verwijder bijbehorende afbeelding als die bestaat
+                    if (item.imageUrl && item.imageUrl.includes('/uploads/')) {
+                        const filename = extractFilenameFromUrl(item.imageUrl);
+                        if (filename) {
+                            try {
+                                await fetch(`${API_BASE_URL}/upload/${filename}`, {
+                                    method: 'DELETE'
+                                });
+                                console.log('Bijbehorende afbeelding verwijderd:', filename);
+                            } catch (error) {
+                                console.warn('Kon afbeelding niet verwijderen:', error);
+                            }
+                        }
+                    }
+                }
+
+                // Verwijder nu het item zelf
+                const response = await fetch(`${API_BASE_URL}/${activeTab}/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) throw new Error('Verwijderen mislukt');
+
+                // Toon success melding
+                showNotification('Item succesvol verwijderd', 'success');
+                loadData();
+            } catch (error) {
+                console.error('Fout bij verwijderen:', error);
+                showNotification('Verwijderen mislukt', 'error');
+            }
+        },
+        () => {
+            console.log('Verwijderen geannuleerd');
+        }
+    );
+};
+
+// Save item
+window.saveItem = async function() {
+    // Validatie
+    if (activeTab === 'locations') {
+        const name = document.getElementById('nameInput').value.trim();
+        const city = document.getElementById('cityInput').value.trim();
+        const type = document.getElementById('typeInput').value;
+        const yearFrom = document.getElementById('yearFromInput').value;
+
+        if (!name || !city || !type || !yearFrom) {
+            showNotification('Vul alle verplichte velden in (gemarkeerd met *)', 'error');
+            return;
+        }
+    } else {
+        const name = document.getElementById('nameInput').value.trim();
+        const category = document.getElementById('categoryInput').value;
+        const year = document.getElementById('yearInput').value;
+
+        if (!name || !category || !year) {
+            showNotification('Vul alle verplichte velden in (gemarkeerd met *)', 'error');
+            return;
+        }
+    }
+
+    const previewImage = document.getElementById('previewImage');
+    let imageUrl = previewImage.src;
+
+    // Als de afbeelding een placeholder is, laat het veld leeg
+    if (imageUrl.includes('blob:') && imageUrl.includes('getPlaceholderImage')) {
+        imageUrl = '';
+    } else if (imageUrl.includes('blob:') || imageUrl.includes('data:image')) {
+        // Dit is een lokale preview (geüploade afbeelding)
+        if (currentImageFilename) {
+            imageUrl = `/uploads/${currentImageFilename}`;
+        } else {
+            imageUrl = '';
+        }
+    }
+
+    const formData = {
+        id: editingItem?.id || generateId(),
+        imageUrl: imageUrl
+    };
+
+    if (activeTab === 'locations') {
+        formData.name = document.getElementById('nameInput').value.trim();
+        formData.type = document.getElementById('typeInput').value;
+        formData.city = document.getElementById('cityInput').value.trim();
+        formData.province = document.getElementById('provinceInput').value;
+        formData.yearFrom = document.getElementById('yearFromInput').value;
+        formData.yearTo = document.getElementById('yearToInput').value || 'Heden';
+        formData.description = document.getElementById('descriptionInput').value.trim();
+        formData.createdAt = editingItem?.createdAt || new Date().toISOString();
+        formData.updatedAt = new Date().toISOString();
+        formData.lat = parseFloat(document.getElementById('latInput').value);
+        formData.lng = parseFloat(document.getElementById('lngInput').value);
+    } else {
+        formData.name = document.getElementById('nameInput').value.trim();
+        formData.category = document.getElementById('categoryInput').value;
+        formData.year = document.getElementById('yearInput').value;
+        formData.description = document.getElementById('descriptionInput').value.trim();
+        formData.createdAt = editingItem?.createdAt || new Date().toISOString();
+        formData.updatedAt = new Date().toISOString();
+    }
+
+    if (!formData.lat || !formData.lng) {
+        showNotification('Vul zowel breedte- als lengtegraad in', 'error');
+        return;
+    }
+
+    try {
+        console.log('Saving item:', formData);
+        
+        const method = isEditing ? 'PUT' : 'POST';
+        const url = isEditing ? `${API_BASE_URL}/${activeTab}/${formData.id}` : `${API_BASE_URL}/${activeTab}`;
+
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Server response:', errorText);
+            throw new Error(`Opslaan mislukt: ${response.status} ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        
+        // Toon success melding
+        showNotification(isEditing ? 'Item succesvol bijgewerkt' : 'Item succesvol toegevoegd', 'success');
+        
+        loadData();
+        closeModal();
+    } catch (error) {
+        console.error('Fout bij opslaan:', error);
+        showNotification(`Opslaan mislukt: ${error.message}`, 'error');
+    }
+};
+
+// Show notification
+function showNotification(message, type) {
+    // Verwijder bestaande notificaties
+    const existingNotifications = document.querySelectorAll('.notification');
+    existingNotifications.forEach(n => n.remove());
+
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${type === 'success' ? '#10b981' : '#ef4444'}" stroke-width="2">
+                ${type === 'success' 
+                    ? '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>'
+                    : '<path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'
+                }
+            </svg>
+            <span>${message}</span>
+        </div>
+        <button onclick="this.parentElement.remove()" style="background: none; border: none; color: #9ca3af; cursor: pointer;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+    `;
+
+    // Styling
+    Object.assign(notification.style, {
+        position: 'fixed',
+        top: '20px',
+        right: '20px',
+        background: 'white',
+        padding: '16px 24px',
+        borderRadius: '12px',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '20px',
+        zIndex: '9999',
+        borderLeft: `4px solid ${type === 'success' ? '#10b981' : '#ef4444'}`,
+        minWidth: '300px',
+        animation: 'slideIn 0.3s ease-out'
+    });
+
+    document.body.appendChild(notification);
+
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 5000);
+}
+
+// Add CSS for slideIn animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+`;
+document.head.appendChild(style);
+</script>
+</body>
+</html>

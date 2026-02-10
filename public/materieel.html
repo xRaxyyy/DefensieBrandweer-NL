@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materieel - DEFENSIEBRANDWEER NL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="js/navbar.js"></script>
+    <script src="js/footer.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+
+        /* Equipment Page */
+        .equipment-page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 20px 50px;
+        }
+
+        .page-header {
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 48px;
+            font-weight: 900;
+            color: #111827;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+
+        .page-subtitle {
+            font-size: 18px;
+            color: #6b7280;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        /* Category Filters */
+        .category-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+
+        .category-btn {
+            padding: 12px 28px;
+            border-radius: 9999px;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 2px;
+            background: white;
+            color: #6b7280;
+            border: 2px solid #e5e7eb;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .category-btn:hover {
+            border-color: #dc2626;
+            color: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .category-btn.active {
+            background: #dc2626;
+            color: white;
+            border-color: #dc2626;
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Equipment Grid */
+        .equipment-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 32px;
+        }
+
+        .equipment-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            border: 1px solid #f3f4f6;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .equipment-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            border-color: #dc2626;
+        }
+
+        .card-image {
+            height: 200px;
+            overflow: hidden;
+            background: #f3f4f6;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .equipment-card:hover .card-image img {
+            transform: scale(1.1);
+        }
+
+        .card-content {
+            padding: 28px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-category {
+            color: #dc2626;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 900;
+            color: #111827;
+            margin-bottom: 12px;
+            line-height: 1.3;
+            transition: color 0.3s;
+        }
+
+        .equipment-card:hover .card-title {
+            color: #dc2626;
+        }
+
+        .card-description {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+            flex-grow: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-footer {
+            padding-top: 20px;
+            border-top: 1px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-year {
+            color: #9ca3af;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 1px;
+        }
+
+        .card-arrow {
+            color: #dc2626;
+            font-weight: 900;
+            font-size: 14px;
+            transition: transform 0.3s;
+        }
+
+        .equipment-card:hover .card-arrow {
+            transform: translateX(4px);
+        }
+
+        /* No Results */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 80px 40px;
+            background: #f9fafb;
+            border-radius: 24px;
+            border: 2px dashed #e5e7eb;
+        }
+
+        .no-results-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(220, 38, 38, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+
+        .no-results-title {
+            font-size: 20px;
+            font-weight: 900;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .no-results-text {
+            color: #6b7280;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* Stats Bar (Weggelaten omdat deze niet in je originele React code staat) */
+
+        /* Results Count */
+        .results-count {
+            margin-bottom: 24px;
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .results-count strong {
+            color: #dc2626;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .equipment-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .equipment-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 36px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .category-filters {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .equipment-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-title {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Equipment Page -->
+    <div class="equipment-page">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Materieel & Blusmiddelen</h1>
+            <p class="page-subtitle">
+                Een overzicht van het (rollend) materieel en de blusmiddelen gebruikt door de Defensiebrandweer door de jaren heen.
+            </p>
+        </div>
+
+        <!-- Category Filters -->
+        <div class="category-filters" id="categoryFilters">
+            <!-- Categories worden hier geladen via JavaScript -->
+        </div>
+
+        <!-- Results Count -->
+        <div class="results-count" id="resultsCount">
+            Toont <strong id="activeCount">0</strong> van de <strong id="totalCount">0</strong> items
+        </div>
+
+        <!-- Equipment Grid -->
+        <div class="equipment-grid" id="equipmentGrid">
+            <!-- Equipment items worden hier geladen via JavaScript -->
+        </div>
+
+        <!-- No Results Message -->
+        <div class="no-results" id="noResults" style="display: none;">
+            <div class="no-results-icon">
+                <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+            </div>
+            <h3 class="no-results-title">Geen items gevonden</h3>
+            <p class="no-results-text">Momenteel zijn er geen items beschikbaar in deze categorie.</p>
+        </div>
+    </div>
+
+    <script>
+        // Equipment categories volgens je React code
+        const EquipmentCategory = {
+            BLUSMIDDELEN: 'Blusmiddelen',
+            VOERTUIGEN: 'Voertuigen',
+            // Voeg andere categorieën toe zoals nodig
+        };
+
+        // Mock data volgens je INITIAL_EQUIPMENT array
+        const equipmentData = [
+            {
+                id: 'e1',
+                name: 'Poederblusser 50 kg',
+                category: EquipmentCategory.BLUSMIDDELEN,
+                year: '1980',
+                description: 'Verrijdbare poederblusser voor grote vloeistofbranden.',
+                imageUrl: 'https://picsum.photos/seed/eq1/800/600',
+                technicalSpecs: [
+                    { label: 'Inhoud', value: '50 kg ABC-poeder' },
+                    { label: 'Bereik', value: '8-10 meter' }
+                ]
+            },
+            {
+                id: 'e2',
+                name: 'E-One Titan HPR',
+                category: EquipmentCategory.VOERTUIGEN,
+                year: '2015',
+                description: 'Groot schuimblusvoertuig (CRASH-tender) voor vliegveldbestrijding.',
+                imageUrl: 'https://picsum.photos/seed/eq2/800/600',
+                technicalSpecs: [
+                    { label: 'Motor', value: 'Cummins QSX15' },
+                    { label: 'Watertank', value: '12.000 liter' }
+                ]
+            },
+            {
+                id: 'e3',
+                name: 'CO₂ Blusser 20 kg',
+                category: EquipmentCategory.BLUSMIDDELEN,
+                year: '1995',
+                description: 'CO₂ blusser voor elektrische branden en gevoelige apparatuur.',
+                imageUrl: 'https://picsum.photos/seed/eq3/800/600',
+                technicalSpecs: [
+                    { label: 'Inhoud', value: '20 kg CO₂' },
+                    { label: 'Bereik', value: '3-5 meter' }
+                ]
+            },
+            {
+                id: 'e4',
+                name: 'Scania P360 PB',
+                category: EquipmentCategory.VOERTUIGEN,
+                year: '2018',
+                description: 'Tankautospuit met 4000 liter water en 500 liter schuim.',
+                imageUrl: 'https://picsum.photos/seed/eq4/800/600',
+                technicalSpecs: [
+                    { label: 'Motor', value: 'Scania DC13' },
+                    { label: 'Watertank', value: '4000 liter' }
+                ]
+            },
+            {
+                id: 'e5',
+                name: 'Magirus M32L AS-HLF',
+                category: EquipmentCategory.VOERTUIGEN,
+                year: '2020',
+                description: 'Hoogwerker met 32 meter uitschuifbare ladder.',
+                imageUrl: 'https://picsum.photos/seed/eq5/800/600',
+                technicalSpecs: [
+                    { label: 'Hoogte', value: '32 meter' },
+                    { label: 'Motor', value: 'Mercedes-Benz OM 470' }
+                ]
+            },
+            {
+                id: 'e6',
+                name: 'Schaumblusser 150 liter',
+                category: EquipmentCategory.BLUSMIDDELEN,
+                year: '2010',
+                description: 'Verrijdbare schuimblusser voor vloeistof- en oliebranden.',
+                imageUrl: 'https://picsum.photos/seed/eq6/800/600',
+                technicalSpecs: [
+                    { label: 'Inhoud', value: '150 liter AFFF schuim' },
+                    { label: 'Bereik', value: '10-12 meter' }
+                ]
+            },
+            {
+                id: 'e7',
+                name: 'Rosenbauer AT 4000',
+                category: EquipmentCategory.VOERTUIGEN,
+                year: '2019',
+                description: 'All-terrain brandweervoertuig voor ruig terrein.',
+                imageUrl: 'https://picsum.photos/seed/eq7/800/600',
+                technicalSpecs: [
+                    { label: 'Aandrijving', value: '4x4' },
+                    { label: 'Watertank', value: '3000 liter' }
+                ]
+            },
+            {
+                id: 'e8',
+                name: 'Brandslang 52mm',
+                category: EquipmentCategory.BLUSMIDDELEN,
+                year: '2022',
+                description: 'Hoge druk brandslang voor bluswatertransport.',
+                imageUrl: 'https://picsum.photos/seed/eq8/800/600',
+                technicalSpecs: [
+                    { label: 'Diameter', value: '52 mm' },
+                    { label: 'Lengte', value: '20 meter' }
+                ]
+            }
+        ];
+
+        // Categories - Gebruik dezelfde structuur als je React code
+        const categories = [
+            'All',
+            EquipmentCategory.BLUSMIDDELEN,
+            EquipmentCategory.VOERTUIGEN
+            // Voeg andere categorieën toe zoals in je React code
+        ];
+
+        // State
+        let activeCategory = 'All';
+        let filteredEquipment = [...equipmentData];
+
+        // DOM elements
+        const categoryFiltersContainer = document.getElementById('categoryFilters');
+        const equipmentGridContainer = document.getElementById('equipmentGrid');
+        const noResultsElement = document.getElementById('noResults');
+        const resultsCountElement = document.getElementById('resultsCount');
+        const activeCountElement = document.getElementById('activeCount');
+        const totalCountElement = document.getElementById('totalCount');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCategories();
+            renderEquipment();
+            updateResultsCount();
+        });
+
+        // Render category filters
+        function renderCategories() {
+            categoryFiltersContainer.innerHTML = '';
+            
+            categories.forEach(category => {
+                const button = document.createElement('button');
+                button.className = `category-btn ${activeCategory === category ? 'active' : ''}`;
+                button.textContent = category;
+                button.dataset.category = category;
+                
+                button.addEventListener('click', () => {
+                    setActiveCategory(category);
+                });
+                
+                categoryFiltersContainer.appendChild(button);
+            });
+        }
+
+        // Render equipment grid
+        function renderEquipment() {
+            equipmentGridContainer.innerHTML = '';
+            
+            if (filteredEquipment.length === 0) {
+                noResultsElement.style.display = 'block';
+                return;
+            }
+            
+            noResultsElement.style.display = 'none';
+            
+            filteredEquipment.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'equipment-card';
+                card.onclick = () => {
+                    showEquipmentDetail(item.id);
+                };
+                
+                card.innerHTML = `
+                    <div class="card-image">
+                        <img src="${item.imageUrl}" alt="${item.name}">
+                    </div>
+                    <div class="card-content">
+                        <div class="card-category">${item.category}</div>
+                        <h3 class="card-title">${item.name}</h3>
+                        <p class="card-description">${item.description}</p>
+                        <div class="card-footer">
+                            <span class="card-year">JAAR: ${item.year}</span>
+                            <span class="card-arrow">→</span>
+                        </div>
+                    </div>
+                `;
+                
+                equipmentGridContainer.appendChild(card);
+            });
+        }
+
+        // Set active category
+        function setActiveCategory(category) {
+            activeCategory = category;
+            
+            // Update filtered equipment
+            if (category === 'All') {
+                filteredEquipment = [...equipmentData];
+            } else {
+                filteredEquipment = equipmentData.filter(item => item.category === category);
+            }
+            
+            // Update UI
+            renderCategories();
+            renderEquipment();
+            updateResultsCount();
+        }
+
+        // Update results count
+        function updateResultsCount() {
+            totalCountElement.textContent = equipmentData.length;
+            activeCountElement.textContent = filteredEquipment.length;
+        }
+
+        // Show equipment detail
+        function showEquipmentDetail(id) {
+            const item = equipmentData.find(e => e.id === id);
+            if (item) {
+                // Toon detail popup met technicalSpecs
+                let specsHtml = '';
+                if (item.technicalSpecs && item.technicalSpecs.length > 0) {
+                    specsHtml = '<h4>Technische Specificaties:</h4><ul style="margin-top: 10px;">';
+                    item.technicalSpecs.forEach(spec => {
+                        specsHtml += `<li><strong>${spec.label}:</strong> ${spec.value}</li>`;
+                    });
+                    specsHtml += '</ul>';
+                }
+                
+                const detailHtml = `
+                    <div style="text-align: left; padding: 20px; max-width: 500px;">
+                        <h2 style="color: #dc2626; margin-bottom: 10px;">${item.name}</h2>
+                        <p><strong>Categorie:</strong> ${item.category}</p>
+                        <p><strong>Jaar:</strong> ${item.year}</p>
+                        <p><strong>Beschrijving:</strong> ${item.description}</p>
+                        ${specsHtml}
+                    </div>
+                `;
+                
+                alert(`Detail informatie voor: ${item.name}\n\nCategorie: ${item.category}\nJaar: ${item.year}\n\nBeschrijving: ${item.description}\n\nTechnische specificaties zouden hier getoond worden.`);
+                
+                // Alternatief: een mooie modal tonen
+                // showModal(detailHtml);
+            }
+        }
+
+        // Show modal (optioneel)
+        function showModal(content) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                padding: 20px;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 20px; max-width: 600px; width: 100%; max-height: 80vh; overflow-y: auto;">
+                    <div style="padding: 30px; position: relative;">
+                        <button onclick="this.parentElement.parentElement.remove()" style="position: absolute; top: 20px; right: 20px; background: none; border: none; font-size: 24px; cursor: pointer;">×</button>
+                        ${content}
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        // Voeg modal functionaliteit toe aan window object
+        window.showModal = showModal;
+    </script>
+</body>
+</html>

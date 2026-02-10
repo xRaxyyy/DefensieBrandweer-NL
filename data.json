@@ -1,0 +1,31 @@
+{
+  "locations": [
+    {
+      "id": "id_1770727177543_2jpzp0sz7",
+      "imageUrl": "http://localhost:3000/uploads/image-1770727181764-934558896.jpg",
+      "name": "Der Hammer",
+      "type": "Vliegbasis",
+      "city": "Den Haag",
+      "province": "Noord-Holland",
+      "yearFrom": "1990",
+      "yearTo": "Heden",
+      "description": "",
+      "createdAt": "2026-02-10T12:39:37.546Z",
+      "updatedAt": "2026-02-10T12:52:19.664Z",
+      "lat": 52.1234,
+      "lng": 52.125
+    }
+  ],
+  "equipment": [
+    {
+      "id": "id_1770709958863_ekn6meklb",
+      "imageUrl": "http://localhost:3000/uploads/image-1770709952682-856938110.jpg",
+      "name": "Ook Test ofzo",
+      "category": "Blusmiddelen",
+      "year": "2026",
+      "description": "",
+      "createdAt": "2026-02-10T07:52:38.866Z",
+      "updatedAt": "2026-02-10T07:52:38.866Z"
+    }
+  ]
+}

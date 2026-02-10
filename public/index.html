@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEFENSIEBRANDWEER NL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="js/navbar.js"></script>
+    <script src="js/footer.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+
+        /* Hero Sectie */
+        .hero {
+            height: 700px;
+            background: #111827;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            margin-top: 70px;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.4;
+            filter: blur(2px);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent, rgba(17, 24, 39, 0.5), #111827);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 0 20px;
+            max-width: 1000px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(220, 38, 38, 0.2);
+            border: 1px solid rgba(220, 38, 38, 0.5);
+            padding: 8px 20px;
+            border-radius: 9999px;
+            color: #dc2626;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 10px;
+            backdrop-filter: blur(8px);
+            margin-bottom: 30px;
+        }
+
+        .hero-badge-dot {
+            position: relative;
+            height: 8px;
+            width: 8px;
+            margin-right: 12px;
+        }
+
+        .hero-badge-dot-ping {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            border-radius: 50%;
+            background: #f87171;
+            opacity: 0.75;
+            animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+
+        .hero-badge-dot-inner {
+            position: relative;
+            border-radius: 50%;
+            height: 100%;
+            width: 100%;
+            background: #dc2626;
+        }
+
+        .hero-title {
+            font-size: 80px;
+            font-weight: 900;
+            color: white;
+            line-height: 0.9;
+            letter-spacing: -1px;
+            margin-bottom: 30px;
+        }
+
+        .hero-title span {
+            color: #dc2626;
+        }
+
+        .hero-subtitle {
+            font-size: 24px;
+            color: #d1d5db;
+            margin-bottom: 50px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: #dc2626;
+            color: white;
+            padding: 20px 40px;
+            border-radius: 20px;
+            font-weight: 900;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 20px 50px rgba(220, 38, 38, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #b91c1c;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 20px;
+            font-weight: 900;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(24px);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Info sectie */
+        .info-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 20px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .info-title {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+            padding-left: 30px;
+            border-left: 12px solid #dc2626;
+        }
+
+        .info-text {
+            color: #4b5563;
+            font-size: 18px;
+            line-height: 1.7;
+            font-weight: 500;
+        }
+
+        .info-text p {
+            margin-bottom: 10px;
+        }
+
+        .info-text .disclaimer-box {
+            padding: 16px 0;
+            margin-bottom: 10px;
+        }
+
+        .disclaimer-label {
+            color: #dc2626;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 4px;
+            margin-bottom: 8px;
+        }
+
+        .info-text .disclaimer-text {
+            color: #111827;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.6;
+            padding-left: 24px;
+            border-left: 4px solid #dc2626;
+            padding-top: 4px;
+            padding-bottom: 4px;
+            max-width: 100%;
+        }
+
+        /* Stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            position: relative;
+        }
+
+        .stats-bg {
+            position: absolute;
+            inset: -40px;
+            background: rgba(220, 38, 38, 0.05);
+            border-radius: 50%;
+            filter: blur(48px);
+            z-index: -1;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 40px;
+            border-radius: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: all 0.5s;
+            border-bottom-width: 12px;
+            border-bottom-style: solid;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-16px);
+        }
+
+        .stat-card-red {
+            border-bottom-color: #dc2626;
+        }
+
+        .stat-card-black {
+            border-bottom-color: #111827;
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 900;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: #dc2626;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 2px;
+        }
+
+        /* Recente locaties */
+        .locations-section {
+            background: #f3f4f6;
+            padding: 80px 20px;
+            border-top: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .locations-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .locations-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 60px;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .locations-title {
+            color: #dc2626;
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 4px;
+            margin-bottom: 16px;
+        }
+
+        .locations-subtitle {
+            font-size: 48px;
+            font-weight: 900;
+            color: #111827;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+
+        .locations-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+
+        .location-card {
+            background: white;
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #f3f4f6;
+        }
+
+        .location-card:hover {
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.15);
+        }
+
+        .location-image {
+            height: 256px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .location-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s;
+            will-change: transform;
+        }
+
+        .location-card:hover .location-image img {
+            transform: scale(1.1);
+        }
+
+        .location-badge {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            background: #dc2626;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 9999px;
+            font-weight: 900;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .location-content {
+            padding: 40px;
+        }
+
+        .location-name {
+            font-size: 24px;
+            font-weight: 900;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+            transition: color 0.3s;
+        }
+
+        .location-card:hover .location-name {
+            color: #dc2626;
+        }
+
+        .location-meta {
+            color: #9ca3af;
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 24px;
+        }
+
+        .location-link {
+            display: flex;
+            align-items: center;
+            color: #dc2626;
+            font-weight: 900;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: transform 0.3s;
+        }
+
+        .location-card:hover .location-link {
+            transform: translateX(12px);
+        }
+
+        /* Contact sectie */
+        .contact-section {
+            background: white;
+            padding: 100px 20px;
+            text-align: center;
+        }
+
+        .contact-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .contact-title {
+            font-size: 36px;
+            font-weight: 900;
+            color: #111827;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+        }
+
+        .contact-text {
+            font-size: 20px;
+            color: #6b7280;
+            margin-bottom: 50px;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        /* Animaties */
+        @keyframes ping {
+            75%, 100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .locations-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 48px;
+            }
+            
+            .hero-subtitle {
+                font-size: 18px;
+            }
+            
+            .info-grid,
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            
+            .locations-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .locations-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero Sectie -->
+    <section class="hero">
+        <img src="https://images.unsplash.com/photo-1516567727245-ad8c68f3ec93?auto=format&fit=crop&q=80&w=2000" alt="Brandweer Hero" class="hero-bg">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <div class="hero-badge-dot">
+                    <span class="hero-badge-dot-ping"></span>
+                    <span class="hero-badge-dot-inner"></span>
+                </div>
+                Sinds 04-06-2020 Online
+            </div>
+            
+            <h1 class="hero-title">
+                DEFENSIE<br><span>BRANDWEER</span> NL
+            </h1>
+            
+            <p class="hero-subtitle">
+                De onofficiële verzamelplaats voor historie, techniek en actuele informatie over de militaire brandweerwereld.
+            </p>
+            
+            <div class="hero-buttons">
+                <button class="btn-primary" onclick="window.location.href='locaties.html'">
+                    Ontdek Locaties →
+                </button>
+                <button class="btn-secondary">
+                    Bekijk Materieel
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Info Sectie -->
+    <section class="info-section">
+        <div class="info-grid">
+            <div>
+                <h2 class="info-title">Over dit platform</h2>
+                <div class="info-text">
+                    <p>
+                        Welkom op de vernieuwde website van <strong>DEFENSIEBRANDWEER NL</strong>. Dit is een particulier initiatief en verzamelplaats met en over alle brandweeractiviteiten van het Nederlandse Ministerie van Defensie van vroeger tot nu in woord en beeld.
+                    </p>
+                    <div class="disclaimer-box">
+                        <p class="disclaimer-label">Belangrijke Mededeling</p>
+                        <p class="disclaimer-text">
+                            Deze website heeft <span style="text-decoration: underline; text-decoration-color: #dc2626; text-underline-offset: 4px;">GEEN</span> officiële status en is <span style="text-decoration: underline; text-decoration-color: #dc2626; text-underline-offset: 4px;">GEEN</span> onderdeel van het Nederlandse Ministerie van Defensie.
+                        </p>
+                    </div>
+                    <p>
+                        Wij doen ons best om je te informeren over belangrijke en soms onbelangrijke zaken in de (Nederlandse) militaire brandweerwereld. Deze unieke website is stapsgewijs gegroeid met Locatie-pagina's, het Kentekenregister, en uitgebreide fotopagina's van defensievoertuigen.
+                    </p>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stats-bg"></div>
+                <div class="stat-card stat-card-red">
+                    <div class="stat-number">230+</div>
+                    <div class="stat-label">Stamkaarten</div>
+                </div>
+                <div class="stat-card stat-card-black" style="margin-top: 48px;">
+                    <div class="stat-number" id="locations-count">0+</div>
+                    <div class="stat-label">Locaties</div>
+                </div>
+                <div class="stat-card stat-card-black" style="margin-top: -16px;">
+                    <div class="stat-number">1K+</div>
+                    <div class="stat-label">Foto Archief</div>
+                </div>
+                <div class="stat-card stat-card-red" style="margin-top: 32px;">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Online Toegang</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recente Locaties -->
+    <section class="locations-section">
+        <div class="locations-container">
+            <div class="locations-header">
+                <div>
+                    <p class="locations-title">Verken de database</p>
+                    <h2 class="locations-subtitle">Recent toegevoegde locaties</h2>
+                </div>
+                <button class="btn-primary" onclick="window.location.href='locaties.html'">
+                    Bekijk Alle Locaties
+                </button>
+            </div>
+            
+            <div class="locations-grid" id="recent-locations">
+                <!-- Recente locaties worden hier geladen -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Sectie -->
+    <section class="contact-section">
+        <div class="contact-container">
+            <h2 class="contact-title">Heeft u meer informatie?</h2>
+            <p class="contact-text">
+                Heeft u nog foto's, verhalen of wetenswaardigheden passend bij deze website? Wij horen het graag! Uw bijdrage helpt dit archief compleet te maken.
+            </p>
+            <button class="btn-primary">
+                Neem Contact Op
+            </button>
+        </div>
+    </section>
+
+<script>
+    // Functie om locaties van de API op te halen
+    async function fetchLocations() {
+        try {
+            console.log('Bezig met ophalen van locaties...');
+            const response = await fetch('http://localhost:3000/api/locations');
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const locations = await response.json();
+            console.log(`${locations.length} locaties opgehaald`);
+            return locations;
+        } catch (error) {
+            console.error('Fout bij ophalen locaties:', error);
+        }
+    }
+
+    // Sorteer locaties op aanmaakdatum (nieuwste eerst)
+    function sortLocationsByDate(locations) {
+        return locations.sort((a, b) => {
+            const dateA = new Date(a.createdAt || a.updatedAt || '1970-01-01');
+            const dateB = new Date(b.createdAt || b.updatedAt || '1970-01-01');
+            return dateB - dateA; // Nieuwste eerst
+        });
+    }
+
+    // Formatteer datum voor weergave
+    function formatDate(dateString) {
+        if (!dateString) return 'Onbekend';
+        try {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('nl-NL', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        } catch (error) {
+            return 'Onbekend';
+        }
+    }
+
+    // Laad recente locaties in de pagina
+    async function loadRecentLocations() {
+        try {
+            const container = document.getElementById('recent-locations');
+            const countElement = document.getElementById('locations-count');
+            
+            if (!container) {
+                console.error('Container voor recente locaties niet gevonden');
+                return;
+            }
+            
+            // Toon laadstatus
+            container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #6b7280;">Locaties laden...</div>';
+            
+            // Haal locaties op
+            const allLocations = await fetchLocations();
+            
+            // Update totaal aantal locaties
+            if (countElement) {
+                countElement.textContent = `${allLocations.length}+`;
+            }
+            
+            // Sorteer op datum en neem de 3 nieuwste
+            const sortedLocations = sortLocationsByDate(allLocations);
+            const recentLocations = sortedLocations.slice(0, 3);
+            
+            // Toon locaties of geen-data-bericht
+            if (recentLocations.length === 0) {
+                container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #6b7280;">Geen locaties gevonden</div>';
+                return;
+            }
+            
+            // Maak locatie kaarten
+            container.innerHTML = '';
+            
+            recentLocations.forEach(loc => {
+                const card = document.createElement('div');
+                card.className = 'location-card';
+                card.onclick = () => {
+                    window.location.href = `locaties.html#detail-${loc.id}`;
+                };
+                
+                // Gebruik beschikbare afbeelding of placeholder
+                let imageUrl = loc.imageUrl || 'https://via.placeholder.com/800x600?text=Geen+Afbeelding';
+                
+                // Als het een lokale upload is, zorg voor correcte URL
+                if (imageUrl.includes('/uploads/') && !imageUrl.startsWith('http')) {
+                    imageUrl = `http://localhost:3000${imageUrl}`;
+                }
+                
+                card.innerHTML = `
+                    <div class="location-image">
+                        <img src="${imageUrl}" alt="${loc.name}">
+                        <div class="location-badge">${loc.type || 'Onbekend'}</div>
+                    </div>
+                    <div class="location-content">
+                        <h3 class="location-name">${loc.name || 'Naamloze locatie'}</h3>
+                        <p class="location-meta">${loc.city || 'Onbekend'} • ${loc.yearFrom || '?'} - ${loc.yearTo || '?'}</p>
+                        <div class="location-link">
+                            Bekijk Gegevens →
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+            
+            console.log(`${recentLocations.length} recente locaties geladen`);
+            
+        } catch (error) {
+            console.error('Fout bij laden van locaties:', error);
+            const container = document.getElementById('recent-locations');
+            if (container) {
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #dc2626;">
+                        <p style="margin-bottom: 10px;">⚠️ Kan locaties niet laden</p>
+                        <p style="font-size: 14px; color: #6b7280;">
+                            Controleer of de API server draait op http://localhost:3000
+                        </p>
+                    </div>
+                `;
+            }
+        }
+    }
+
+    // Initialisatie
+    document.addEventListener('DOMContentLoaded', () => {
+        // Laad recente locaties
+        loadRecentLocations();
+    });
+
+    // Functie om ook vanaf andere scripts aan te roepen
+    window.refreshLocations = loadRecentLocations;
+</script>
+</body>
+</html>
