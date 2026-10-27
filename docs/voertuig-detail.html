@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=block" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voertuig detail - DEFENSIEBRANDWEER NL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@400;700&display=block" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="js/navbar.js"></script>
+    <script src="js/footer.js"></script>
+    <script src="js/loader.js"></script>
+    <script src="js/scrollbar.js"></script>
+    <script src="js/detail-skeleton.js"></script>
+    <style>
+        .detail-container { max-width:1280px; padding:128px 48px 88px; }
+        .back-btn { min-height:44px; padding:10px 16px; border-radius:4px; border:1px solid var(--border); background:var(--surface); color:var(--gold); font:600 15px 'Barlow',sans-serif; text-decoration:none; display:inline-flex; align-items:center; gap:8px; transition:background-color 150ms,color 150ms,border-color 150ms; }
+        .back-btn:hover { background:var(--olive); border-color:var(--gold); color:#FFD078; }
+        .page-title { color:var(--text); font:700 clamp(44px,6vw,72px)/1 'Barlow Condensed',sans-serif; text-transform:uppercase; letter-spacing:0; margin:0 0 8px; }
+        .page-meta { color:var(--text-soft); font:500 16px 'Barlow',sans-serif; }
+        .page-meta i { color:var(--gold); }
+        .main-image { aspect-ratio:16/10; margin-bottom:20px; background:var(--bg-dark); border:1px solid var(--border); border-radius:6px; overflow:hidden; }
+        .main-image img { display:block; width:100%; height:100%; object-fit:cover; }
+        .content-section { margin:0 0 16px; padding:22px; background:var(--surface); border:1px solid var(--border); border-radius:6px; }
+        .content-section h2 { margin:0 0 14px; padding:0 0 12px; color:var(--gold); border-bottom:1px solid var(--border); font:700 22px 'Barlow Condensed',sans-serif; letter-spacing:.04em; text-transform:uppercase; }
+        .content-section p { color:var(--text-soft); font:400 16px/1.7 'Barlow',sans-serif; }
+        .spec-table { width:100%; border-collapse:collapse; }
+        .spec-table td { padding:12px 18px; border-bottom:1px solid var(--border); }
+        .spec-table td.spec-label { color:var(--text-muted); font-size:14px; }
+        .spec-table td.spec-value { color:var(--text-soft); font-weight:600; }
+        .spec-table tr:nth-child(even) { background:var(--bg-dark); }
+        .stamp { margin-top:4px; padding:8px 12px; border-radius:4px; font:700 13px 'Barlow',sans-serif; letter-spacing:.08em; }
+        .stamp-active { color:var(--bg-dark); background:var(--gold); border:1px solid var(--gold); }
+        .stamp-inactive { color:var(--text-soft); background:var(--olive); border:1px solid var(--border); }
+        .status-badge { display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border-radius:3px; font-weight:600; font-size:13px; white-space:nowrap; }
+        .status-badge::before { content:''; width:6px; height:6px; border-radius:50%; background:#000; }
+        .status-badge.status-active { color:var(--bg-dark); background:var(--gold); }
+        .status-badge.status-inactive { color:var(--text-soft); background:var(--olive); border:1px solid var(--border); }
+        .back-btn:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+        @media(max-width:768px) { .detail-container { padding:112px 20px 60px; } .main-image { aspect-ratio:16/9; } .content-section { padding:18px; } }
+    </style>
+</head>
+<body class="vehicle-detail-page">
+<div id="navbar-placeholder"></div>
+<div class="scroll-container"><div class="scroll-content">
+<div class="detail-container" id="content">
+    <a class="back-btn" href="voertuigen"><i class="fas fa-arrow-left"></i> Terug naar voertuigen</a>
+    <div id="vehicleContent"></div>
+</div>
+<div id="footer-placeholder"></div>
+</div><div class="custom-scrollbar-body"><div class="scrollbar-thumb"></div></div></div>
+<script>
+    const API_BASE_URL = '/api';
+    const MIN_SKELETON_TIME = 650;
+    const loadingStartedAt = performance.now();
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+    function esc(s) { return (s || '').replace(/[&<>"]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : m === '>' ? '&gt;' : '&quot;'); }
+    async function load() {
+        await DefensieLoader.start({ loadingText: 'Voertuig laden...' });
+        try {
+            const r = await fetch(`${API_BASE_URL}/vehicles/${id}`);
+            if (!r.ok) throw new Error('Voertuig niet gevonden');
+            const v = await r.json();
+            const isActive = v.status === 'Actief' || !v.yearTo || v.yearTo === 'Heden';
+            const statusText = isActive ? 'Actief' : 'Historisch';
+            const statusClass = isActive ? 'status-active' : 'status-inactive';
+            document.getElementById('vehicleContent').innerHTML = `
+                <div class="page-head"><div class="page-eyebrow">${v.type || 'Voertuig'}</div><h1 class="page-title">${v.naam || [v.merk, v.type].filter(Boolean).join(' ') || ''}</h1><div class="page-meta"><i class="fi fi-rr-truck-moving"></i> ${[v.merk, v.type].filter(Boolean).join(' • ')}</div></div>
+                <div class="main-image"><img src="${v.imageUrl || ''}" alt="" onerror="this.style.display='none'"></div>
+                <div class="content-section"><h2>Over dit voertuig</h2><p>${v.description || 'Geen beschrijving beschikbaar.'}</p></div>
+                <div class="content-section"><h2>Technische gegevens</h2><table class="spec-table"><tr><td class="spec-label">Status</td><td class="spec-value"><span class="status-badge ${statusClass}">${statusText}</span></td></tr><tr><td class="spec-label">Merk</td><td class="spec-value">${v.merk || '–'}</td></tr><tr><td class="spec-label">Type</td><td class="spec-value">${v.type || '–'}</td></tr><tr><td class="spec-label">Bouwjaar</td><td class="spec-value">${v.bouwjaar || '–'}</td></tr><tr><td class="spec-label">Periode</td><td class="spec-value">${v.yearFrom || '?'} – ${v.yearTo || 'heden'}</td></tr></table></div>`;
+        } catch (e) {
+            document.getElementById('vehicleContent').innerHTML = `<div class="error-message"><i class="fas fa-exclamation-triangle"></i><h2>Fout bij laden</h2><p>${e.message}</p><button onclick="location.reload()"><i class="fas fa-redo-alt"></i> Opnieuw proberen</button></div>`;
+        }
+        await DefensieLoader.stop();
+    }
+    document.addEventListener('DOMContentLoaded', async () => {
+        const elapsed = performance.now() - loadingStartedAt;
+        if (elapsed < MIN_SKELETON_TIME) await new Promise(r => setTimeout(r, MIN_SKELETON_TIME - elapsed));
+        await load();
+    });
+</script>
+</body>
+</html>

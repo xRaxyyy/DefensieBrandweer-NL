@@ -954,30 +954,16 @@ app.get('/', (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    const serverUrl = `http://localhost:${PORT}`;
-    console.log(`
-╔══════════════════════════════════════════════════════╗
-║        🚀 DEFENSIEBRANDWEER NL API SERVER           ║
-╚══════════════════════════════════════════════════════╝
-`);
-    console.log(`🌐 Server URL:  ${serverUrl}`);
-    console.log(`⚡ Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`📁 Data file:   ${DATA_FILE}`);
-    console.log(`📸 Uploads dir: ${UPLOADS_DIR}`);
-    console.log(`📊 Belangrijke endpoints:`);
-    console.log(`   • GET  ${serverUrl}/api/health     - Server status`);
-    console.log(`   • GET  ${serverUrl}/api/info       - Server info`);
-    console.log(`   • GET  ${serverUrl}/api/locations  - Locaties (${serverUrl}/api/locations)`);
-    console.log(`   • GET  ${serverUrl}/api/equipment  - Materieel (${serverUrl}/api/equipment)`);
-    console.log(`   • POST ${serverUrl}/api/upload     - Upload afbeelding`);
-    console.log(`   • GET  ${serverUrl}/api/stats      - Statistieken`);
-    console.log(`   • GET  ${serverUrl}/api/settings   - Instellingen`);
-    console.log(`
-💡 Tips:
-   • Voeg data toe via ${serverUrl}/dashboard.html
-   • Bekijk locaties op ${serverUrl}/locaties.html
-   • Bekijk materieel op ${serverUrl}/equipment.html
-`);
-    console.log(`──────────────────────────────────────────────`);
+const server = app.listen(PORT, () => {
+    console.log(`Server draait op http://localhost:${PORT} (${process.env.NODE_ENV || 'development'})`);
+    console.log(`Open in browser: http://localhost:${PORT}`);
+});
+server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+        console.error(`Poort ${PORT} is al in gebruik. Sluit het oude proces af: Get-Process node | Stop-Process -Force`);
+        process.exit(1);
+    } else {
+        console.error('Serverfout:', err);
+        process.exit(1);
+    }
 });

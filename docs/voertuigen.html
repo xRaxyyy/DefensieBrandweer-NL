@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=block" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voertuigen - DEFENSIEBRANDWEER NL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@400;700&display=block" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="js/navbar.js"></script>
+    <script src="js/footer.js"></script>
+    <script src="js/loader.js"></script>
+    <script src="js/scrollbar.js"></script>
+    <style>
+        .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; margin-top:28px; }
+        .vehicle-overview .card { display:block; overflow:hidden; color:var(--text); text-decoration:none; background:var(--surface); border:1px solid var(--border); border-top:3px solid var(--blue); border-radius:6px; transition:border-color 150ms; }
+        .vehicle-overview .card:hover { color:var(--text); border-color:var(--gold); }
+        .vehicle-overview .card .img { display:block; position:relative; width:100%; aspect-ratio:4/3; overflow:hidden; background:var(--olive); }
+        .vehicle-overview .card .img img { display:block; width:100%; height:100%; object-fit:cover; }
+        .vehicle-overview .card .status { position:absolute; top:12px; left:12px; display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border-radius:3px; background:var(--gold); color:var(--bg-dark); font:600 13px 'Barlow',sans-serif; }
+        .vehicle-overview .card .status::before { content:""; width:6px; height:6px; border-radius:50%; background:var(--olive); }
+        .vehicle-overview .card .body { display:flex; flex-direction:column; gap:9px; padding:20px 22px 22px; }
+        .vehicle-overview .card .cat { color:var(--gold); font:700 13px 'Barlow Condensed',sans-serif; letter-spacing:.12em; text-transform:uppercase; }
+        .vehicle-overview .card h3 { margin:0; color:var(--text); font:700 28px/1.05 'Barlow Condensed',sans-serif; text-transform:uppercase; }
+        .vehicle-overview .card:hover h3 { color:#FFD078; }
+        .vehicle-overview .card .sub2 { display:flex; align-items:center; gap:8px; min-height:23px; color:var(--text-muted); font:400 15px/1.55 'Barlow',sans-serif; }
+        .vehicle-overview .card .sub2 i { color:var(--gold); }
+        .vehicle-overview .card .meta { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:8px; padding-top:14px; border-top:1px solid var(--border); }
+        .vehicle-overview .card .date { display:inline-flex; align-items:center; gap:10px; padding:0; color:var(--text-soft); background:transparent; font:600 14px 'Barlow',sans-serif; }
+        .vehicle-overview .card .date i { color:var(--gold); }
+        .vehicle-overview .card .go { display:flex; flex:0 0 44px; align-items:center; justify-content:center; width:44px; height:44px; color:var(--gold); background:transparent; border:1px solid var(--border); border-radius:4px; transition:background-color 150ms,border-color 150ms,color 150ms; }
+        .vehicle-overview .card:hover .go { color:var(--text); background:var(--olive); border-color:var(--gold); }
+        .vehicle-overview .card .go i { transition:transform 150ms; }
+        .vehicle-overview .card:hover .go i { transform:rotate(-45deg); }
+        .grid > .card:not(.vehicle-skeleton) { animation:vehicle-fade .35s ease both; }
+        @keyframes vehicle-fade { from { opacity:0; } to { opacity:1; } }
+        .vehicle-skeleton { min-height:470px; pointer-events:none; }
+        .vehicle-skeleton-image { display:block; width:100%; aspect-ratio:4/3; background:var(--olive); }
+        .vehicle-skeleton-copy { display:flex; flex-direction:column; gap:9px; padding:20px 22px 22px; }
+        .vehicle-skeleton-line { display:block; height:15px; border-radius:3px; background:var(--olive); }
+        .vehicle-skeleton-line.category { width:34%; height:12px; }
+        .vehicle-skeleton-line.title { width:76%; height:30px; }
+        .vehicle-skeleton-line.detail { width:52%; height:23px; }
+        .vehicle-skeleton-meta { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:8px; padding-top:14px; border-top:1px solid var(--border); }
+        .vehicle-skeleton-date { display:block !important; width:136px; height:14px; border-radius:3px; background:var(--olive); }
+        .vehicle-skeleton-arrow { width:44px; height:44px; flex:0 0 44px; border:1px solid var(--border); border-radius:4px; background:var(--olive); }
+        .vehicle-skeleton-image,.vehicle-skeleton-line,.vehicle-skeleton-date,.vehicle-skeleton-arrow { position:relative; overflow:hidden; }
+        .vehicle-skeleton-image::after,.vehicle-skeleton-line::after,.vehicle-skeleton-date::after,.vehicle-skeleton-arrow::after { content:""; position:absolute; inset:0; transform:translateX(-100%); background-image:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent); animation:vehicle-shimmer 1.4s infinite; }
+        @keyframes vehicle-shimmer { to { transform:translateX(100%); } }
+        .empty { color:var(--text-muted); padding:48px 20px; text-align:center; }
+        .empty i { color:var(--gold); font-size:36px; }
+        .empty h3 { color:var(--text); font:700 22px 'Barlow Condensed',sans-serif; text-transform:uppercase; margin:12px 0 6px; }
+        .empty p { color:var(--text-soft); font-size:14px; margin:0 0 16px; }
+        .empty button { min-height:44px; padding:9px 16px; color:#000; background:var(--gold); border:1px solid var(--gold); border-radius:4px; font:600 15px 'Barlow',sans-serif; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:8px; line-height:1; }
+        .empty button i, .empty button .fas, .empty button .fa-solid { font-size:14px; line-height:1; color:#000; display:inline-flex; align-items:center; justify-content:center; width:14px; height:14px; margin:0; }
+        .empty button i::before, .empty button .fas::before, .empty button .fa-solid::before { line-height:1; margin:0; display:block; }
+        .empty button:hover { color:#000; background:#FFD078; border-color:#FFD078; }
+        @media(max-width:1024px) { .page { padding:116px 32px 72px; } .grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .toolbar { gap:12px; } }
+        @media(max-width:640px) { .page { padding:112px 20px 60px; } .page h1 { font-size:46px; } .sub { font-size:17px; margin-bottom:32px; } .toolbar { align-items:stretch; } .search { width:100%; } .cats { width:100%; } .cats button { flex:1; } .count { width:100%; margin:0; } .grid { grid-template-columns:1fr; gap:16px; } }
+    </style>
+</head>
+<body class="vehicle-overview">
+<div id="navbar-placeholder"></div>
+<div class="scroll-container"><div class="scroll-content">
+<div class="page">
+    <div class="kicker">Collectie — Defensiebrandweer</div>
+    <h1>Voertuigen <span>& stamkaarten</span></h1>
+    <p class="sub">Van historische stamkaarten tot moderne blusvoertuigen. Zoek op naam, merk, kenteken of type, en filter op status.</p>
+    <div class="toolbar">
+        <label class="search"><i class="fi fi-rr-search"></i><input type="text" id="searchInput" placeholder="Zoeken..."></label>
+        <div class="cats" id="statusFilters">
+            <button data-filter="all" class="active">Alles</button>
+            <button data-filter="active">Actief</button>
+            <button data-filter="historical">Historisch</button>
+        </div>
+        <span class="count" id="resultsCount"><span class="vehicle-skeleton-line" style="display:block;width:84px;height:14px" aria-hidden="true"></span></span>
+    </div>
+    <div class="grid" id="vehiclesGrid" aria-label="Voertuigen laden" aria-busy="true"><div class="card vehicle-skeleton" aria-hidden="true"><span class="img vehicle-skeleton-image"></span><div class="body vehicle-skeleton-copy"><span class="vehicle-skeleton-line category"></span><span class="vehicle-skeleton-line title"></span><span class="vehicle-skeleton-line detail"></span><div class="vehicle-skeleton-meta"><span class="date vehicle-skeleton-date"></span><span class="vehicle-skeleton-arrow"></span></div></div></div><div class="card vehicle-skeleton" aria-hidden="true"><span class="img vehicle-skeleton-image"></span><div class="body vehicle-skeleton-copy"><span class="vehicle-skeleton-line category"></span><span class="vehicle-skeleton-line title"></span><span class="vehicle-skeleton-line detail"></span><div class="vehicle-skeleton-meta"><span class="date vehicle-skeleton-date"></span><span class="vehicle-skeleton-arrow"></span></div></div></div><div class="card vehicle-skeleton" aria-hidden="true"><span class="img vehicle-skeleton-image"></span><div class="body vehicle-skeleton-copy"><span class="vehicle-skeleton-line category"></span><span class="vehicle-skeleton-line title"></span><span class="vehicle-skeleton-line detail"></span><div class="vehicle-skeleton-meta"><span class="date vehicle-skeleton-date"></span><span class="vehicle-skeleton-arrow"></span></div></div></div></div>
+    <div class="empty" id="noResults" style="display:none;">
+        <i class="fi fi-rr-truck-moving"></i>
+        <h3>Niets gevonden</h3>
+        <p>Pas je zoekopdracht of filters aan.</p>
+        <button id="resetFiltersBtn"><i class="fas fa-rotate-left"></i> Reset filters</button>
+    </div>
+</div>
+<div id="footer-placeholder"></div>
+</div><div class="custom-scrollbar-body"><div class="scrollbar-thumb"></div></div></div>
+<script>
+    const API_BASE_URL = '/api';
+    const MIN_SKELETON_TIME = 650;
+    const loadingStartedAt = performance.now();
+    let allVehicles = [], allLicenseplates = [];
+    let activeFilter = 'all', searchTerm = '';
+    const grid = document.getElementById('vehiclesGrid'), noResults = document.getElementById('noResults'),
+        searchInput = document.getElementById('searchInput'), resultsCount = document.getElementById('resultsCount'),
+        resetBtn = document.getElementById('resetFiltersBtn');
+
+    async function fetchVehicles() {
+        try {
+            const [vehiclesRes, platesRes] = await Promise.all([
+                fetch(`${API_BASE_URL}/vehicles`),
+                fetch(`${API_BASE_URL}/licenseplates`)
+            ]);
+            if (!vehiclesRes.ok) throw new Error('API error');
+            if (platesRes.ok) allLicenseplates = await platesRes.json();
+            return await vehiclesRes.json();
+        } catch (e) { return []; }
+    }
+
+    function applyFilters() {
+        const q = searchTerm.toLowerCase();
+        const f = allVehicles.filter(v => {
+            if (activeFilter === 'active' && !(v.status === 'Actief' || !v.yearTo)) return false;
+            if (activeFilter === 'historical' && !(v.status === 'Historisch' || v.yearTo)) return false;
+            if (q) {
+                const hay = [v.merk, v.type, v.naam, v.leverancier].filter(Boolean).join(' ').toLowerCase();
+                const plates = allLicenseplates.filter(lp => lp.koppelVoertuigId === v.id);
+                const kent = plates.some(lp => lp.kenteken && lp.kenteken.toLowerCase().includes(q));
+                if (!hay.includes(q) && !kent) return false;
+            }
+            return true;
+        });
+        render(f);
+        resultsCount.textContent = `${f.length} ${f.length === 1 ? 'voertuig' : 'voertuigen'}`;
+    }
+
+    function render(list) {
+        if (!list.length) { grid.style.display = 'none'; noResults.style.display = 'block'; return; }
+        grid.style.display = 'grid'; noResults.style.display = 'none';
+        grid.innerHTML = list.map(v => {
+            const img = v.imageUrl || 'https://images.unsplash.com/photo-1582131503261-fca1c9bcec44?auto=format&fit=crop&q=80&w=800';
+            const title = v.naam || [v.merk, v.type].filter(Boolean).join(' ') || 'Onbekend voertuig';
+            const sub = v.naam ? [v.merk, v.type].filter(Boolean).join(' • ') : '';
+            const period = `${v.yearFrom || '?'} – ${v.yearTo || 'heden'}`;
+            const on = v.status === 'Actief' || !v.yearTo;
+            return `<a class="card" href="voertuig-detail?id=${encodeURIComponent(v.id || '')}">
+                <div class="img"><img src="${img}" alt="" onerror="this.src='https://images.unsplash.com/photo-1582131503261-fca1c9bcec44?auto=format&fit=crop&q=80&w=800'">
+                <span class="status ${on ? 'on' : 'off'}">${on ? 'Actief' : 'Historisch'}</span></div>
+                <div class="body">
+                    <div class="cat">${v.type || 'Voertuig'}</div>
+                    <h3>${title}</h3>
+                    ${sub ? `<div class="sub2"><i class="fi fi-rr-label"></i>${sub}</div>` : ''}
+                    <div class="meta"><span class="date"><i class="fi fi-rr-calendar"></i>${period}</span><span class="go"><i class="fi fi-rr-arrow-right"></i></span></div>
+                </div></a>`;
+        }).join('');
+        grid.removeAttribute('aria-label');
+        grid.removeAttribute('aria-busy');
+    }
+
+    document.querySelectorAll('#statusFilters button').forEach(b => b.addEventListener('click', () => {
+        document.querySelectorAll('#statusFilters button').forEach(x => x.classList.toggle('active', x === b));
+        activeFilter = b.dataset.filter;
+        applyFilters();
+    }));
+    let t;
+    searchInput.addEventListener('input', e => { clearTimeout(t); t = setTimeout(() => { searchTerm = e.target.value; applyFilters(); }, 250); });
+    resetBtn.addEventListener('click', () => {
+        searchInput.value = ''; searchTerm = ''; activeFilter = 'all';
+        document.querySelectorAll('#statusFilters button').forEach(x => x.classList.toggle('active', x.dataset.filter === 'all'));
+        applyFilters();
+    });
+    document.addEventListener('DOMContentLoaded', async () => {
+        allVehicles = await fetchVehicles();
+        const elapsed = performance.now() - loadingStartedAt;
+        if (elapsed < MIN_SKELETON_TIME) await new Promise(r => setTimeout(r, MIN_SKELETON_TIME - elapsed));
+        applyFilters();
+    });
+</script>
+</body>
+</html>

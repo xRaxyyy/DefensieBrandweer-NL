@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=block" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Afkortingen Defensie - DEFENSIEBRANDWEER NL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@400;700&display=block" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="js/navbar.js"></script>
+    <script src="js/footer.js"></script>
+    <script src="js/loader.js"></script>
+    <script src="js/scrollbar.js"></script>
+    <style>
+        .table { min-width:600px; }
+        .table thead th:nth-child(1) { width:12%; }
+        .table thead th:nth-child(2) { width:18%; }
+        .table thead th:nth-child(3) { width:70%; }
+        .table tbody td { vertical-align:top; }
+        .table tbody tr:hover { background:#252D1D; }
+        .kmd { color:var(--gold); font-weight:600; white-space:nowrap; }
+        .afk { color:var(--text); font-weight:600; }
+        .page-size-wrap { position:relative; }
+        .custom-page-size { position:relative; }
+        .custom-page-size-trigger { display:inline-flex; align-items:center; gap:8px; min-height:40px; padding:8px 14px; background:var(--surface); color:var(--text); border:1px solid var(--border); border-radius:4px; font:600 14px 'Barlow',sans-serif; cursor:pointer; transition:border-color 150ms, background-color 150ms; }
+        .custom-page-size-trigger:hover { border-color:var(--gold); }
+        .custom-page-size-trigger i { font-size:10px; color:var(--text-muted); transition:transform 150ms; }
+        .custom-page-size.open .custom-page-size-trigger i { transform:rotate(180deg); }
+        .custom-page-size-menu { position:absolute; top:calc(100% + 6px); right:0; min-width:100%; padding:4px; background:var(--surface); border:1px solid var(--border); border-radius:4px; box-shadow:0 12px 32px rgba(0,0,0,.4); opacity:0; visibility:hidden; transform:translateY(-4px); transition:opacity 140ms, transform 140ms, visibility 0s linear 140ms; z-index:50; }
+        .custom-page-size.open .custom-page-size-menu { opacity:1; visibility:visible; transform:translateY(0); transition-delay:0s; }
+        .custom-page-size-option { display:block; width:100%; text-align:left; padding:8px 12px; border:none; background:transparent; color:var(--text-soft); font:500 14px 'Barlow',sans-serif; border-radius:3px; cursor:pointer; transition:background-color 120ms, color 120ms; }
+        .custom-page-size-option:hover { background:var(--olive); color:#FFD078; }
+        .custom-page-size-option.active { background:var(--blue); color:#fff; }
+        .pagination { display:flex; align-items:center; justify-content:center; gap:12px; margin-top:24px; flex-wrap:wrap; }
+        .page-btn { min-height:36px; padding:6px 14px; background:var(--surface); color:var(--text-soft); border:1px solid var(--border); border-radius:4px; font:600 13px 'Barlow',sans-serif; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:background-color 150ms,color 150ms,border-color 150ms; }
+        .page-btn:hover:not(:disabled) { background:var(--olive); color:#FFD078; border-color:var(--gold); }
+        .page-btn:disabled { opacity:.4; cursor:not-allowed; }
+        .page-numbers { display:flex; gap:4px; }
+        .page-num { min-width:36px; min-height:36px; padding:6px 10px; background:var(--surface); color:var(--text-soft); border:1px solid var(--border); border-radius:4px; font:600 13px 'Barlow',sans-serif; cursor:pointer; transition:background-color 150ms,color 150ms,border-color 150ms; }
+        .page-num:hover { background:var(--olive); color:#FFD078; border-color:var(--gold); }
+        .page-num.active { background:var(--gold); color:#000; border-color:var(--gold); }
+        .page-info { color:var(--text-muted); font:500 13px 'Barlow',sans-serif; margin-left:8px; }
+        .page-btn i { font-size:10px; }
+        .toolbar-right { display:flex; align-items:center; gap:12px; margin-left:auto; }
+    </style>
+</head>
+<body class="register-page">
+<div id="navbar-placeholder"></div>
+<div class="scroll-container"><div class="scroll-content">
+<div class="page">
+    <div class="kicker">Overig — Defensiebrandweer</div>
+    <h1>Afkortingen <span>Defensie</span></h1>
+    <p class="sub">Een overzicht van afkortingen die gebruikt worden bij Defensie. Gebruik de zoekfunctie om een term te vinden.</p>
+    <div class="toolbar">
+        <label class="search"><i class="fi fi-rr-search"></i><input type="text" id="searchInput" placeholder="Zoeken op afkorting of betekenis..."></label>
+        <div class="toolbar-right">
+            <span class="count" id="resultsCount"></span>
+            <div class="page-size-wrap">
+                <div class="custom-page-size" id="pageSizeWrap">
+                    <button type="button" class="custom-page-size-trigger" id="pageSizeTrigger" aria-haspopup="listbox" aria-expanded="false">
+                        <span id="pageSizeLabel">100</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="custom-page-size-menu" id="pageSizeMenu" role="listbox">
+                        <button type="button" class="custom-page-size-option" data-value="25">25</button>
+                        <button type="button" class="custom-page-size-option" data-value="50">50</button>
+                        <button type="button" class="custom-page-size-option active" data-value="100">100</button>
+                        <button type="button" class="custom-page-size-option" data-value="all">Alles</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="table-container" id="tableWrap">
+        <table class="table" aria-label="Afkortingen laden" aria-busy="true">
+            <thead>
+                <tr><th>KMD</th><th>Afkorting</th><th>Uitleg</th></tr>
+            </thead>
+            <tbody id="abbrBody"></tbody>
+        </table>
+    </div>
+    <div class="pagination" id="pagination" style="display:none;">
+        <button type="button" class="page-btn" id="prevPage"><i class="fas fa-chevron-left"></i> Vorige</button>
+        <div class="page-numbers" id="pageNumbers"></div>
+        <button type="button" class="page-btn" id="nextPage">Volgende <i class="fas fa-chevron-right"></i></button>
+        <span class="page-info" id="paginationInfo"></span>
+    </div>
+    <div class="empty" id="noResults" style="display:none;">
+        <i class="fi fi-rr-search"></i>
+        <h3>Niets gevonden</h3>
+        <p>Pas je zoekopdracht aan.</p>
+    </div>
+</div>
+<div id="footer-placeholder"></div>
+</div><div class="custom-scrollbar-body"><div class="scrollbar-thumb"></div></div></div>
+<script>
+    const ABBR = [
+["KLu","12GGW","12e Groep Geleide Wapens"],["KLu","1GGW","1e Groep Geleide Wapens"],["KLu","2GGW","2e Groep Geleide Wapens"],["KLu","3GGW","3e Groep Geleide Wapens"],["KLu","4GGW","4e Groep Geleide Wapens"],["KLu","5GGW","5e Groep Geleide Wapens"],
+["BRW","ADR","Verdrag betreffende het internationaal vervoer van gevaarlijke goederen over de weg"],["DEF","AFCENT","Allied Forces Central Europe"],["BRW","AHW","Aanhangwagen"],["DEF","AJF","Allied Joined Forces"],["KL","AMO","Algemene Militaire Opleiding"],["BRW","AMS","Aanhanger MotorSpuit"],
+["KLu","AOCS","Air Operations Control Station"],["BRW","AS","Autospuit"],["KLu","ASCON","Automatic Switched Communication Network"],["KL","ASK","Artillerie SchietKamp"],["KLu","BB","Bureau Brandweer"],["KLu","BIBK","Besluit Inkoopsamenwerking Brandweermaterieel Krijgsmacht"],
+["KL","BOS","Benzine Oliën Smeermiddelen"],["KLu","BOTC","Brandweer Oefen- en TestCentrum"],["BRW","BRWNL","Brandweer Nederland"],["DEF","CDC","Commando Diensten Centra"],["BRW","CDOVTG","Commandovoertuig"],["KLu","CLSK","Commando LuchtStrijdKrachten"],
+["DEF","CMH","Centraal Militair Hospitaal"],["DEF","CML","Centrum Mens en Luchtvaart"],["DEF","CRU","Conflict Research Unit"],["KLu","CTL","Commando Tactische Luchtstrijdkrachten"],["DEF","DA","DienstAuto"],["DEF","DA-OD","DienstAuto Officier van Dienst"],
+["DEF","DEF","Defensiebreed"],["KLu","DELM","Depot Elektronisch Luchtmacht Materieel"],["KLu","DFTDC","Defence Fire Training & Development Centre"],["KL","DGLC","Defensie Grondgebonden Luchtverdedigingscommando"],["KLu","DM/MPS","Directie Materieel Afdeling Algemene Ondersteuning"],["KLu","DMTM","Depot Motor Transport Materieel"],
+["DEF","DOC","Defensie OndersteuningsCommando"],["DEF","DPO","Defensie Pijpleiding Organisatie"],["DEF","DVD","Dienst Vastgoed Defensie"],["DEF","DVVO","Defensie Verkeers- en Vervoers- Organisatie"],["DEF","EOD","Explosieven Opruimings Dienst"],["DEF","FSE","Forward Support Element"],
+["KLu","GGW De Peel","Groep Geleide Wapens De Peel"],["KLu","GGWNL","Groep Geleide Wapens Nederland"],["KLu","GHK","Groepshoofdkwartier"],["KLu","GLK","Groepslegeringskamp"],["DEF","GM","Gereedschap / Materieel (voertuig)"],["KL","GOC","Genie Opleidings Centrum"],
+["KLu","GPLV","Groep Lichte Vliegtuigen"],["BRW","HANTAS","Hanomag TAS"],["KL","IBL","Instandhoudings Bedrijf Landsystemen"],["BRW","ICAO","International Civil Aviation Organization"],["DEF","ICCT","International Centre for Counter-Terrorism"],["DEF","IDL","Instituut Defensie Leergangen"],
+["DEF","IFOR","Implementation Force"],["VEIL","IFV","Instituut voor Fysieke Veiligheid"],["KL","ISK","Infanterie Schietkamp"],["DEF","JIVC","Joint InformatieVoorziening Commando"],["KM","KIM","Koninklijk Instituut voor de Marine"],["KLu","KKSL","Koninklijke Kaderschool Luchtmacht"],
+["KLu","KL","Koninklijke Landmacht"],["KLu","KLS","Koninklijke Luchtmacht Staf"],["KLu","KLu","Koninklijke Luchtmacht"],["KLu","KM","Koninklijke Marine"],["DEF","KMA","Koninklijke Militaire Academie"],["Kmar","Kmar","Koninklijke Marechaussee"],
+["DEF","KMD","Krijgsmachtdeel"],["KLu","KMSL","Koninklijke Militaire School Luchtmacht"],["KLu","KvZ","Kamp van Zeist"],["KLu","LETS","Luchtmacht Elektronische en Technische School"],["Klu","LIMOS (KLu)","Luchtmacht Instructie- en Militaire Opleidings School"],["KLu","LKS","Luchtmacht KaderSchool"],
+["DEF","LM / KM / KP / KO, en andere","Kenteken kenmerk"],["KLu","LUVA","Luchtmacht Vrouwen Afdeling"],["KM","MARKAZ","Michiel Adriaanszoon de Ruyterkazerne"],["KM","MARVA","Marine Vrouwen Afdeling"],["KLu","MCA","Munitie Complex Alphen"],["DEF","MCGS","Militaire Commissie Gevaarlijke Stoffen"],
+["DEF","MD","Materieel Dienst"],["KM","MEA","Marine Etablissement Amsterdam"],["KM","MEOB","Marine Elektronisch en Optisch Bedrijf"],["DEF","MGD","Medisch Geneeskundige Dienst"],["DEF","MGLC","Militair Geneeskundig Logistiek Centrum"],["KL","MILVA","Militaire Vrouwen Afdeling"],
+["KLu","MLM","Militair Luchtwaart Museum"],["KLu","MLT","Militair Luchtvaart Terrein"],["KM","MMD","Marine Magazijndienst"],["KL","MOB-complex","Mobilisatie Complex"],["KM","MOK","Marine OpleidingsKamp"],["DEF","MP","Militaire Publicatie"],
+["KLu","MPA","Munitie Park Alphen"],["BRW","MSA","MotorSpuit Aanhanger"],["KM","MSKSAV","Marinierskazerne Savaneta (Aruba) Antillen"],["KL","MSS","Mijnen- en Springmiddelen School"],["KM","MVK de Kooy","Marine Vliegkamp De Kooy"],["KM","MVK Valkenburg","Marine Vliegkamp Valkenburg"],
+["KLu","NATCO","Nationaal Commando"],["BRW","NBBE","Nederlands Bureau voor Brandweer Examens"],["BRW","NIBRA","Nederlands Instituut voor Brandveiligheid"],["DEF","NLDA","Nederlandse Defensie Academie"],["DEF","NMM","Nationaal Militair Museum"],["KLu","NSN","Navigatie Station Noord"],
+["BRW","NVBK","Nederlandse Vereniging van Brandweer Korpsen"],["BRW","P-250","Poederblusaanhanger 250 kg"],["DEF","PKC","Plein - Kalvermarkt Complex"],["BRW","PM","Peroneel Materieel voertuig"],["DEF","PMC","Provinciaal Militair Commandant"],["DEF","POMS","Prepositioned Organizational Material Storage"],
+["DEF","QPL","Quality Product List"],["KL","RIMI","Reparatie Inrichtingen Materieel Inspectie"],["KLu","RPN","Radar Post Noord"],["BRW","SB","Schuimblusauto"],["KLu","SBRW","Sectie Brandweer"],["DEF","SFOR","Stabilisation Force"],
+["DEF","SL","SLangenvoertuig"],["DEF","SSM","Single Service Management"],["DEF","SSP","Single Service Procurement"],["KLu","STL","Staf Tactische Luchtstrijdkrachten"],["BRW","TAS / TS","TankAutoSpuit"],["DEF","TD","Technische Dienst"],
+["KLu","TL/SBRW","Tactische Luchtstrijdkrachten Sectie Brandweer"],["BRW","TS","Tankautospuit"],["BRW","UNTAS","Unimog TAS"],["KL","UTC","Urban Training Center"],["VEIL","VEIL","Veiligheid"],["KL","VHK","Vrouwen Hulp Korps"],
+["KLu","VKAM","Vlieg(veiligheid), Kwaliteit, Arbo en Milieu)"],["KLu","VLBDL","Vliegbasis Deelen"],["KLu","VLBDP","Vliegbasis De Peel"],["KLu","VLBEHV","Vliegbasis Eindhoven"],["KLu","VLBGZRY","Vliegbasis Gilze-Rijen"],["KLu","VLBLW","Vliegbasis Leeuwarden"],
+["KLu","VLBSSB","Vliegbasis Soesterberg"],["KLu","VLBTW","Vliegbasis Twenthe"],["KLu","VLBVKL","Vliegbasis Volkel"],["KLu","VLBWDT","Vliegbasis Woensdrecht"],["KLu","VLBYP","Vliegbasis Ypenburg"],["DEF","WCBK","Werkgroep Coördinatie Brandweerzaken Krijgsmacht"],
+["KM","WGF","Willem George Frederik"],["DEF","WP","Wachtpost"],["KLu","WS Kamp","Wallaardt Sacré Kamp"]
+];
+    let q = '';
+    let pageSize = 100;
+    let currentPage = 1;
+    const tbody = document.getElementById('abbrBody');
+    const count = document.getElementById('resultsCount');
+    const search = document.getElementById('searchInput');
+    const noRes = document.getElementById('noResults');
+    const tableWrap = document.getElementById('tableWrap');
+    const pageSizeWrap = document.getElementById('pageSizeWrap');
+    const pageSizeTrigger = document.getElementById('pageSizeTrigger');
+    const pageSizeLabel = document.getElementById('pageSizeLabel');
+    const pageSizeMenu = document.getElementById('pageSizeMenu');
+    const pageSizeOptions = pageSizeMenu.querySelectorAll('.custom-page-size-option');
+    const pagination = document.getElementById('pagination');
+    const paginationInfo = document.getElementById('paginationInfo');
+    const prevBtn = document.getElementById('prevPage');
+    const nextBtn = document.getElementById('nextPage');
+    const pageNumbers = document.getElementById('pageNumbers');
+    let filteredList = [];
+    function esc(s){return (s||'').replace(/[&<>]/g,m=>m==='&'?'&amp;':m==='<'?'&lt;':'&gt;');}
+    function render() {
+        const query = q.toLowerCase();
+        const list = ABBR.filter(r => !query || r.join(' ').toLowerCase().includes(query));
+        filteredList = list;
+        const total = list.length;
+        const perPage = pageSize === 'all' ? total : pageSize;
+        const totalPages = perPage > 0 ? Math.max(1, Math.ceil(total / perPage)) : 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+        const start = pageSize === 'all' ? 0 : (currentPage - 1) * perPage;
+        const shown = pageSize === 'all' ? list : list.slice(start, start + perPage);
+        count.textContent = pageSize === 'all' ? `${total} ${total===1?'afkorting':'afkortingen'}` : `${start+1}-${start+shown.length} van ${total} ${total===1?'afkorting':'afkortingen'}`;
+        if (!list.length) { tableWrap.style.display='none'; noRes.style.display='block'; pagination.style.display='none'; return; }
+        tableWrap.style.display=''; noRes.style.display='none';
+        tbody.innerHTML = shown.map(r => `<tr><td class="kmd">${esc(r[0])}</td><td class="afk">${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`).join('');
+        if (pageSize === 'all' || totalPages <= 1) {
+            pagination.style.display = 'none';
+        } else {
+            pagination.style.display = 'flex';
+            paginationInfo.textContent = `Pagina ${currentPage} van ${totalPages}`;
+            prevBtn.disabled = currentPage <= 1;
+            nextBtn.disabled = currentPage >= totalPages;
+            let nums = '';
+            const maxButtons = 5;
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+            if (endPage - startPage < maxButtons - 1) startPage = Math.max(1, endPage - maxButtons + 1);
+            for (let i = startPage; i <= endPage; i++) {
+                nums += `<button type="button" class="page-num ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+            }
+            pageNumbers.innerHTML = nums;
+            pageNumbers.querySelectorAll('.page-num').forEach(b => b.addEventListener('click', () => {
+                currentPage = parseInt(b.dataset.page, 10);
+                render();
+            }));
+        }
+    }
+    search.addEventListener('input', e => { clearTimeout(window._t); window._t = setTimeout(() => { q = e.target.value; currentPage = 1; render(); }, 200); });
+    function setPageSize(value) {
+        pageSize = value === 'all' ? 'all' : parseInt(value, 10);
+        pageSizeLabel.textContent = value === 'all' ? 'Alles' : value;
+        pageSizeOptions.forEach(o => o.classList.toggle('active', o.dataset.value === String(value)));
+        pageSizeWrap.classList.remove('open');
+        pageSizeTrigger.setAttribute('aria-expanded', 'false');
+        currentPage = 1;
+        render();
+    }
+    pageSizeTrigger.addEventListener('click', e => {
+        e.stopPropagation();
+        const open = pageSizeWrap.classList.toggle('open');
+        pageSizeTrigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    pageSizeOptions.forEach(o => o.addEventListener('click', e => {
+        e.stopPropagation();
+        setPageSize(o.dataset.value);
+    }));
+    document.addEventListener('click', e => {
+        if (!pageSizeWrap.contains(e.target)) {
+            pageSizeWrap.classList.remove('open');
+            pageSizeTrigger.setAttribute('aria-expanded', 'false');
+        }
+    });
+    prevBtn.addEventListener('click', () => { if (currentPage > 1) { currentPage--; render(); } });
+    nextBtn.addEventListener('click', () => { currentPage++; render(); });
+    document.addEventListener('DOMContentLoaded', () => { render(); });
+</script>
+</body>
+</html>

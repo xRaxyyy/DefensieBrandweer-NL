@@ -1,0 +1,6 @@
+.legal-page .page { max-width: 860px; }
+.legal-page .prose { color: var(--text-soft); font: 400 16px/1.7 'Barlow', sans-serif; max-width: 720px; }
+.legal-page .prose p { margin-bottom: 16px; }
+.legal-page .prose a { color: var(--gold); text-decoration: none; }
+.legal-page .prose a:hover { color: #FFD078; text-decoration: underline; text-underline-offset: 3px; }
+.legal-page .page h1 { font-size: clamp(38px, 5vw, 60px); }

@@ -1,4 +1,18 @@
-// navbar.js - Automatisch geïnjecteerde navbar (oorspronkelijke stijl)
+(function gateNavbarFonts() {
+    if (!document.head || document.getElementById('defensie-navbar-gate')) return;
+    const style = document.createElement('style');
+    style.id = 'defensie-navbar-gate';
+    style.textContent = 'defensie-navbar{visibility:hidden}html.defensie-fonts-ready defensie-navbar{visibility:visible}';
+    document.head.appendChild(style);
+    function reveal() { document.documentElement.classList.add('defensie-fonts-ready'); }
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(reveal);
+        setTimeout(reveal, 2500);
+    } else {
+        reveal();
+    }
+})();
+
 class Navbar extends HTMLElement {
     constructor() {
         super();
@@ -14,213 +28,199 @@ class Navbar extends HTMLElement {
 
     getCurrentPage() {
         const path = window.location.pathname;
-        if (path.includes('locaties.html')) return 'locations';
-        if (path.includes('materieel.html')) return 'materieel';
-        if (path.includes('dashboard.html')) return 'dashboard';
+        if (path.includes('fotogalerij')) return 'gallery';
+        if (path.includes('locaties')) return 'locations';
+        if (path.includes('materieel')) return 'materieel';
+        if (path.includes('dashboard')) return 'dashboard';
+        if (path.includes('voertuigen')) return 'voertuigen';
+        if (path.includes('locatie-detail')) return 'locations';
+        if (path.includes('voertuig-detail')) return 'voertuigen';
+        if (path.includes('kenteken')) return 'voertuigen';
+        if (path.includes('luchthavenbrandweer')) return 'luchthavenbrandweer';
+        if (path.includes('afkortingen')) return 'afkortingen';
         return 'home';
     }
 
+    rootPrefix() {
+        const path = window.location.pathname;
+        if (path.includes('/materieel/fotopagina/')) return '../../';
+        if (path.includes('/materieel/')) return '../';
+        return '';
+    }
+
+    getCurrentTopic() {
+        const path = window.location.pathname.split('/').pop().split('?')[0];
+        return path || '';
+    }
+
     render() {
+        window.DefensieNavbarRoot = this.rootPrefix();
         this.innerHTML = `
             <style>
-                .navbar {
-                    background: #1b263b;
-                    color: white;
-                    position: fixed;
-                    top: 0;
-                    width: 100%;
-                    z-index: 1000;
-                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-                    border-bottom: 4px solid #dc2626;
-                    font-family: 'oswald', sans-serif;
-                }
-
-                .nav-container {
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding: 0 20px;
-                }
-
-                .nav-content {
-                    height: 80px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                }
-
-                .brand {
-                    display: flex;
-                    align-items: center;
-                    cursor: pointer;
-                }
-
-                .brand-icon {
-                    background: #dc2626;
+                .navbar { background: rgba(12, 14, 9, 0.92); backdrop-filter: blur(10px); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; }
+                .navbar::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #dc2626 0%, #dc2626 50%, #F0AE4A 50%, #F0AE4A 75%, #1F4FE0 75%, #1F4FE0 100%); }
+                .nav-container { max-width: 1280px; margin: 0 auto; padding: 0 48px; }
+                .nav-content { display: flex; align-items: center; justify-content: space-between; height: 84px; }
+                .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #EDEFE6; font-weight: 700; font-size: 18px; letter-spacing: -0.02em; }
+                .brand-icon { width: 40px; height: 40px; background: #dc2626; color: #fff; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+                .brand-text span { color: #dc2626; }
+                .nav-links { display: flex; gap: 6px; align-items: center; }
+                .nav-btn { background: none; border: 1px solid transparent; padding: 10px 14px; border-radius: 4px; font-size: 14px; font-weight: 600; color: #B9BFAE; cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 8px; font-family: inherit; }
+                .nav-btn:hover { color: #EDEFE6; background: #1E2417; border-color: #3A4130; }
+                .nav-btn.active { color: #fff; background: #1F4FE0; border-color: #1F4FE0; }
+                .nav-btn .caret { font-size: 11px; transition: transform .2s; }
+                .nav-dropdown { position: relative; }
+                .nav-dropdown.open .nav-btn .caret { transform: rotate(180deg); }
+                .dropdown-panel {
+                    position: absolute;
+                    top: calc(100% + 4px);
+                    left: 50%;
+                    transform: translateX(-50%) translateY(-4px);
+                    min-width: 220px;
+                    background: #1E2417;
+                    border: 1px solid #3A4130;
+                    border-radius: 6px;
+                    box-shadow: 0 16px 40px rgba(0,0,0,.4);
                     padding: 8px;
-                    border-radius: 12px;
-                    margin-right: 12px;
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                    opacity: 0;
+                    visibility: hidden;
+                    transition: opacity .2s, visibility .2s, transform .2s;
+                    z-index: 1001;
                 }
-
-                .brand-text {
-                    font-size: 24px;
-                    font-weight: 900;
-                    color: white;
-                    text-transform: uppercase;
-                    letter-spacing: -0.5px;
+                .nav-dropdown::after {
+                    content: '';
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    right: 0;
+                    height: 12px;
                 }
-
-                .brand-text span {
-                    color: #dc2626;
+                .nav-dropdown.open .dropdown-panel,
+                .nav-dropdown:hover .dropdown-panel {
+                    opacity: 1;
+                    visibility: visible;
+                    transform: translateX(-50%) translateY(0);
                 }
-
-                .nav-links {
+                .drop-item {
                     display: flex;
-                    gap: 4px;
-                }
-
-                .nav-btn {
-                    padding: 10px 20px;
-                    border-radius: 8px;
-                    font-family: 'oswald', sans-serif;
+                    align-items: center;
+                    gap: 10px;
+                    width: 100%;
+                    padding: 10px 14px;
+                    border: none;
+                    background: none;
+                    border-radius: 4px;
                     font-size: 14px;
                     font-weight: 500;
-                    text-transform: uppercase;
-                    letter-spacing: 1px;
-                    background: none;
-                    border: none;
-                    color: #d1d5db;
+                    color: #D3D8C8;
                     cursor: pointer;
-                    transition: all 0.3s;
-                }
-
-                .nav-btn:hover {
-                    background: rgba(255, 255, 255, 0.1);
-                    color: #dc2626;
-                }
-
-                .nav-btn.active {
-                    background: #dc2626;
-                    color: white;
-                    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
-                }
-
-                .mobile-menu-btn {
-                    display: none;
-                    background: none;
-                    border: none;
-                    color: #9ca3af;
-                    padding: 10px;
-                    cursor: pointer;
-                }
-
-                .mobile-menu {
-                    display: none;
-                    background: #1b263b;
-                    padding: 20px;
-                    border-top: 1px solid rgba(255, 255, 255, 0.1);
-                }
-
-                .mobile-nav-btn {
-                    display: block;
-                    width: 100%;
-                    padding: 15px;
+                    font-family: inherit;
+                    transition: all .2s;
                     text-align: left;
-                    background: none;
-                    border: none;
-                    color: #d1d5db;
-                    font-size: 16px;
-                    font-weight: 600;
-                    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                    cursor: pointer;
-                    transition: all 0.3s;
                 }
-
-                .mobile-nav-btn:last-child {
-                    border-bottom: none;
+                .drop-item:hover { color: #EDEFE6; background: #2F3A25; }
+                .drop-item.active { color: #fff; background: #1F4FE0; }
+                .drop-sep { height: 1px; background: #3A4130; margin: 6px 4px; }
+                .drop-has-sub { position: relative; }
+                .flyout {
+                    position: absolute;
+                    top: 0;
+                    left: 100%;
+                    min-width: 220px;
+                    background: #1E2417;
+                    border: 1px solid #3A4130;
+                    border-radius: 6px;
+                    box-shadow: 0 16px 40px rgba(0,0,0,.4);
+                    padding: 8px;
+                    opacity: 0;
+                    visibility: hidden;
+                    transition: opacity .2s, visibility .2s, transform .2s;
+                    transform: translateX(-6px);
+                    z-index: 1002;
                 }
-
-                .mobile-nav-btn:hover {
-                    background: rgba(255, 255, 255, 0.1);
-                    color: #dc2626;
-                }
-
-                .mobile-nav-btn.active {
-                    background: rgba(220, 38, 38, 0.2);
-                    color: #dc2626;
-                    border-left: 4px solid #dc2626;
-                }
-
+                .drop-has-sub:hover .flyout { opacity: 1; visibility: visible; transform: translateX(0); }
+                .mobile-menu-btn { display: none; background: none; border: none; font-size: 22px; cursor: pointer; color: #EDEFE6; }
+                .mobile-menu { display: none; }
+                .mobile-nav-btn { display: block; width: 100%; padding: 14px 20px; background: none; border: none; text-align: left; font-size: 15px; font-weight: 500; color: #B9BFAE; cursor: pointer; font-family: inherit; transition: all .2s; border-bottom: 1px solid #3A4130; }
+                .mobile-nav-btn:hover { background: #1E2417; color: #EDEFE6; }
+                .mobile-nav-btn.active { color: #fff; background: #1F4FE0; }
+                .brand:focus-visible, .navbar button:focus-visible { outline: 2px solid #F0AE4A; outline-offset: 2px; }
                 @media (max-width: 768px) {
-                    .nav-links {
-                        display: none;
-                    }
-
-                    .mobile-menu-btn {
-                        display: block;
-                    }
+                    .nav-container { padding: 0 20px; }
+                    .nav-links { display: none; }
+                    .mobile-menu-btn { display: block; }
+                    .mobile-menu { display: block; position: absolute; top: 84px; left: 0; right: 0; background: #1E2417; border-bottom: 1px solid #3A4130; box-shadow: 0 16px 40px rgba(0,0,0,.4); }
                 }
-
-                @media (min-width: 769px) {
-                    .mobile-menu {
-                        display: none !important;
-                    }
+                @media (prefers-reduced-motion: reduce) {
+                    .navbar *, .navbar *::before, .navbar *::after { transition-duration: .01ms !important; }
                 }
             </style>
 
             <nav class="navbar">
                 <div class="nav-container">
                     <div class="nav-content">
-                        <div class="brand" onclick="window.location.href='index.html'">
-                            <div class="brand-icon">
-                                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                          d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                          d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
-                                </svg>
-                            </div>
-                            <div class="brand-text">
-                                Defensiebrandweer <span>NL</span>
-                            </div>
-                        </div>
-
+                        <a class="brand" href="${this.rootPrefix()}index">
+                            <div class="brand-icon"><i class="fi fi-rr-flame"></i></div>
+                            <div class="brand-text">Defensiebrandweer <span>NL</span></div>
+                        </a>
                         <div class="nav-links">
                             <button class="nav-btn ${this.currentPage === 'home' ? 'active' : ''}" data-page="home">
-                                Welkom!
+                                <i class="fi fi-rr-home"></i> Home
                             </button>
                             <button class="nav-btn ${this.currentPage === 'locations' ? 'active' : ''}" data-page="locations">
-                                Locaties
+                                <i class="fi fi-rr-marker"></i> Locaties
                             </button>
-                            <button class="nav-btn ${this.currentPage === 'materieel' ? 'active' : ''}" data-page="materieel">
-                                Materieel
+                            <div class="nav-dropdown">
+                                <button class="nav-btn ${this.currentPage === 'voertuigen' || this.currentPage === 'luchthavenbrandweer' ? 'active' : ''}" data-page="voertuigen">
+                                    <i class="fi fi-rr-truck-moving"></i> Rollend materieel <i class="fi fi-rr-angle-small-down caret"></i>
+                                </button>
+                                <div class="dropdown-panel" id="rollendDropdown">
+                                    <button class="drop-item ${this.currentPage === 'voertuigen' ? 'active' : ''}" data-page="voertuigen"><i class="fi fi-rr-truck-moving"></i> Voertuigen</button>
+                                    <button class="drop-item" data-page="kenteken-register"><i class="fi fi-rr-file"></i> Kentekenregister</button>
+                                    <button class="drop-item" data-page="luchthavenbrandweer"><i class="fi fi-rr-plane"></i> Luchthavenbrandweer</button>
+                                </div>
+                            </div>
+                            <button class="nav-btn ${this.currentPage === 'gallery' ? 'active' : ''}" data-page="gallery">
+                                <i class="fi fi-rr-gallery"></i> Foto's
                             </button>
+                            <div class="nav-dropdown">
+                                <button class="nav-btn ${this.currentPage === 'materieel' ? 'active' : ''}" data-page="materieel">
+                                    <i class="fi fi-rr-tools"></i> Materieel <i class="fi fi-rr-angle-small-down caret"></i>
+                                </button>
+                                <div class="dropdown-panel" id="matDropdown">
+                                    <button class="drop-item" data-mat="all"><i class="fi fi-rr-apps"></i> Alle materieel</button>
+                                    <div class="drop-sep"></div>
+                                    <button class="drop-item" data-topic="materieel/ademluchtapparatuur">Ademluchtapparatuur</button>
+                                    <button class="drop-item" data-topic="materieel/armaturen">Armaturen water &amp; schuim</button>
+                                    <button class="drop-item" data-topic="materieel/blusmiddelen">Blusmiddelen &amp; blusapparatuur</button>
+                                    <div class="drop-sep"></div>
+                                    <button class="drop-item" data-mat="Blustoestel">Blustoestellen</button>
+                                    <button class="drop-item" data-topic="materieel/brandweerkleding">Brandweerkleding</button>
+                                    <button class="drop-item" data-mat="Materieellijst">Materieellijst</button>
+                                    <button class="drop-item" data-mat="Pomp">Pompen – Techniek</button>
+                                    <button class="drop-item" data-mat="Redgereedschap">Redgereedschap</button>
+                                </div>
+                            </div>
                             <button class="nav-btn ${this.currentPage === 'dashboard' ? 'active' : ''}" data-page="dashboard">
-                                Dashboard
+                                <i class="fi fi-rr-dashboard"></i> Dashboard
+                            </button>
+                            <button class="nav-btn ${this.currentPage === 'afkortingen' ? 'active' : ''}" data-page="afkortingen">
+                                <i class="fi fi-rr-book"></i> Afkortingen
                             </button>
                         </div>
-
                         <button class="mobile-menu-btn" id="mobileMenuBtn">
-                            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                      d="${this.isMobileMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}" />
-                            </svg>
+                            <i class="fi fi-rr-${this.isMobileMenuOpen ? 'cross' : 'menu-burger'}"></i>
                         </button>
                     </div>
-
                     <div class="mobile-menu" id="mobileMenu" style="display: ${this.isMobileMenuOpen ? 'block' : 'none'}">
-                        <button class="mobile-nav-btn ${this.currentPage === 'home' ? 'active' : ''}" data-page="home">
-                            Welkom!
-                        </button>
-                        <button class="mobile-nav-btn ${this.currentPage === 'locations' ? 'active' : ''}" data-page="locations">
-                            Locaties
-                        </button>
-                        <button class="mobile-nav-btn ${this.currentPage === 'materieel' ? 'active' : ''}" data-page="materieel">
-                            Materieel
-                        </button>
-                        <button class="mobile-nav-btn ${this.currentPage === 'dashboard' ? 'active' : ''}" data-page="dashboard">
-                            Dashboard
-                        </button>
+                        <button class="mobile-nav-btn ${this.currentPage === 'home' ? 'active' : ''}" data-page="home"><i class="fi fi-rr-home"></i> Home</button>
+                        <button class="mobile-nav-btn ${this.currentPage === 'locations' ? 'active' : ''}" data-page="locations"><i class="fi fi-rr-marker"></i> Locaties</button>
+                        <button class="mobile-nav-btn ${this.currentPage === 'voertuigen' ? 'active' : ''}" data-page="voertuigen"><i class="fi fi-rr-truck-moving"></i> Voertuigen</button>
+                        <button class="mobile-nav-btn ${this.currentPage === 'luchthavenbrandweer' ? 'active' : ''}" data-page="luchthavenbrandweer"><i class="fi fi-rr-plane"></i> Luchthavenbrandweer</button>
+                        <button class="mobile-nav-btn ${this.currentPage === 'gallery' ? 'active' : ''}" data-page="gallery"><i class="fi fi-rr-gallery"></i> Fotogalerij</button>
+                        <button class="mobile-nav-btn ${this.currentPage === 'materieel' ? 'active' : ''}" data-page="materieel"><i class="fi fi-rr-tools"></i> Materieel</button>
+                        <button class="mobile-nav-btn ${this.currentPage === 'dashboard' ? 'active' : ''}" data-page="dashboard"><i class="fi fi-rr-dashboard"></i> Dashboard</button>
+                        <button class="mobile-nav-btn ${this.currentPage === 'afkortingen' ? 'active' : ''}" data-page="afkortingen"><i class="fi fi-rr-book"></i> Afkortingen</button>
                     </div>
                 </div>
             </nav>
@@ -228,30 +228,77 @@ class Navbar extends HTMLElement {
     }
 
     setupEventListeners() {
-        // Desktop navigation
-        this.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
+        const desktopBtns = this.querySelectorAll('.nav-links .nav-btn');
+        const mobileBtns = this.querySelectorAll('.mobile-nav-btn');
+        const mobileMenuBtn = this.querySelector('#mobileMenuBtn');
+
+        desktopBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if (btn.closest('.nav-dropdown') && !e.target.closest('.dropdown-panel')) {
+                    const wrap = btn.closest('.nav-dropdown');
+                    if (window.innerWidth > 768 && e.target.closest('.nav-btn') && !wrap.classList.contains('open')) {
+                        if (matchMedia('(hover: none)').matches) {
+                            e.preventDefault();
+                            wrap.classList.add('open');
+                            return;
+                        }
+                    }
+                }
+                e.preventDefault();
                 const page = btn.dataset.page;
                 this.navigateTo(page);
             });
         });
 
-        // Mobile navigation
-        this.querySelectorAll('.mobile-nav-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
+        this.querySelectorAll('.dropdown-panel .drop-item[data-page]').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const page = item.dataset.page;
+                this.closeMobileMenu();
+                const slug = { 'home':'index','locations':'locaties','materieel':'materieel','voertuigen':'voertuigen','gallery':'fotogalerij','dashboard':'dashboard','afkortingen':'afkortingen','luchthavenbrandweer':'luchthavenbrandweer','kenteken-register':'kenteken-register' }[page];
+                if (slug) window.location.href = this.rootPrefix() + slug;
+            });
+        });
+
+        this.querySelectorAll('[data-mat]').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const q = item.dataset.mat;
+                this.closeMobileMenu();
+                const base = `${this.rootPrefix()}materieel`;
+                window.location.href = q === 'all' ? base : `${base}?zoek=${encodeURIComponent(q)}`;
+            });
+        });
+
+        this.querySelectorAll('[data-topic]').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.closeMobileMenu();
+                let t = item.dataset.topic;
+                if (t.startsWith('materieel/')) t = this.rootPrefix() + t;
+                window.location.href = t;
+            });
+        });
+
+        mobileBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
                 const page = btn.dataset.page;
                 this.navigateTo(page);
                 this.closeMobileMenu();
             });
         });
 
-        // Mobile menu toggle
-        this.querySelector('#mobileMenuBtn').addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.toggleMobileMenu();
-        });
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleMobileMenu();
+            });
+        }
 
-        // Close mobile menu when clicking outside
         document.addEventListener('click', (e) => {
             if (!this.contains(e.target) && this.isMobileMenuOpen) {
                 this.closeMobileMenu();
@@ -260,87 +307,73 @@ class Navbar extends HTMLElement {
     }
 
     navigateTo(page) {
-        // Map page names to URLs
         const pageMap = {
-            'home': 'index.html',
-            'locations': 'locaties.html',
-            'materieel': 'materieel.html',
-            'dashboard': 'dashboard.html'
+            'home': 'index',
+            'locations': 'locaties',
+            'materieel': 'materieel',
+            'voertuigen': 'voertuigen',
+            'gallery': 'fotogalerij',
+            'dashboard': 'dashboard',
+            'afkortingen': 'afkortingen',
+            'luchthavenbrandweer': 'luchthavenbrandweer'
         };
-        
-        const url = pageMap[page];
-        if (url && url !== '#') {
-            window.location.href = url;
-        } else {
-            this.currentPage = page;
-            this.updateActiveState();
-            this.closeMobileMenu();
-        }
+        const slug = pageMap[page];
+        if (slug) window.location.href = this.rootPrefix() + slug;
     }
 
     updateActiveState() {
-        // Update desktop buttons
-        this.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.page === this.currentPage);
+        this.querySelectorAll('.nav-links .nav-btn').forEach(btn => {
+            const isActive = btn.dataset.page === this.currentPage;
+            if (isActive) btn.classList.add('active');
+            else btn.classList.remove('active');
         });
-
-        // Update mobile buttons
         this.querySelectorAll('.mobile-nav-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.page === this.currentPage);
+            const isActive = btn.dataset.page === this.currentPage;
+            if (isActive) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+        this.querySelectorAll('.dropdown-panel .drop-item').forEach(item => {
+            const isActive = item.dataset.page === this.currentPage || item.dataset.mat === this.getCurrentTopic() || item.dataset.topic === this.getCurrentTopic();
+            if (isActive) item.classList.add('active');
+            else item.classList.remove('active');
         });
     }
 
     toggleMobileMenu() {
         this.isMobileMenuOpen = !this.isMobileMenuOpen;
         const mobileMenu = this.querySelector('#mobileMenu');
-        const menuBtnIcon = this.querySelector('#mobileMenuBtn svg');
-        
-        if (mobileMenu) {
-            mobileMenu.style.display = this.isMobileMenuOpen ? 'block' : 'none';
-        }
-        
-        if (menuBtnIcon) {
-            menuBtnIcon.innerHTML = this.isMobileMenuOpen ? 
-                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>' :
-                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>';
-        }
+        const menuBtnIcon = this.querySelector('#mobileMenuBtn i');
+        if (mobileMenu) mobileMenu.style.display = this.isMobileMenuOpen ? 'block' : 'none';
+        if (menuBtnIcon) menuBtnIcon.className = `fi fi-rr-${this.isMobileMenuOpen ? 'cross' : 'menu-burger'}`;
     }
 
     closeMobileMenu() {
         this.isMobileMenuOpen = false;
         const mobileMenu = this.querySelector('#mobileMenu');
-        const menuBtnIcon = this.querySelector('#mobileMenuBtn svg');
-        
-        if (mobileMenu) {
-            mobileMenu.style.display = 'none';
-        }
-        
-        if (menuBtnIcon) {
-            menuBtnIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>';
-        }
+        const menuBtnIcon = this.querySelector('#mobileMenuBtn i');
+        if (mobileMenu) mobileMenu.style.display = 'none';
+        if (menuBtnIcon) menuBtnIcon.className = 'fi fi-rr-menu-burger';
     }
 }
 
-// Automatische injectie van de navbar
-document.addEventListener('DOMContentLoaded', () => {
-    // Verwijder bestaande navigatie
-    const existingNav = document.querySelector('nav');
-    if (existingNav && existingNav.parentElement && !existingNav.classList.contains('hero')) {
-        existingNav.remove();
-    }
-    
-    // Registreer custom element als het nog niet bestaat
-    if (!customElements.get('defensie-navbar')) {
-        customElements.define('defensie-navbar', Navbar);
-    }
-    
-    // Injecteer de navbar bovenaan de body
+if (!customElements.get('defensie-navbar')) {
+    customElements.define('defensie-navbar', Navbar);
+}
+
+function mountNavbar() {
+    if (document.querySelector('defensie-navbar') || !document.body) return false;
     const navbarElement = document.createElement('defensie-navbar');
     document.body.insertBefore(navbarElement, document.body.firstChild);
-    
-    // Pas de hero sectie margin aan
-    const heroSection = document.querySelector('.hero');
-    if (heroSection) {
-        heroSection.style.marginTop = '80px';
-    }
-});
+    return true;
+}
+
+(function gateNavbarFonts() {
+    // already defined above
+})();
+
+if (!mountNavbar()) {
+    const navbarObserver = new MutationObserver(() => {
+        if (mountNavbar()) navbarObserver.disconnect();
+    });
+    navbarObserver.observe(document.documentElement, { childList: true, subtree: true });
+}

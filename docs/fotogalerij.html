@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=block" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fotogalerij - DEFENSIEBRANDWEER NL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@400;700&display=block" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="js/navbar.js"></script>
+    <script src="js/footer.js"></script>
+    <script src="js/loader.js"></script>
+    <script src="js/scrollbar.js"></script>
+    <script src="js/modal.js"></script>
+    <style>
+        .cats { align-items:center; gap:6px; padding-bottom:18px; border-bottom:1px solid var(--border); margin-bottom:8px; flex-wrap:wrap; }
+        .cats button { min-height:44px; padding:9px 16px; border:1px solid var(--border); border-radius:4px; background:var(--surface); color:var(--text-soft); font:600 15px 'Barlow',sans-serif; cursor:pointer; transition:background-color 150ms,color 150ms,border-color 150ms; }
+        .cats button:hover { background:var(--olive); color:#FFD078; border-color:var(--gold); }
+        .cats button.active { background:var(--blue); color:#fff; border-color:var(--blue); }
+        .cats button:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
+        .count { color:var(--text-muted); font-size:14px; letter-spacing:0; }
+        .grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; margin-top:24px; }
+        .ph { display:block; width:100%; padding:0; aspect-ratio:4/3; overflow:hidden; cursor:zoom-in; appearance:none; text-align:left; background:var(--surface); border:1px solid var(--border); border-radius:5px; position:relative; isolation:isolate; }
+        .ph img { display:block; width:100%; height:100%; object-fit:cover; transform:scale(1); transform-origin:center; will-change:transform; transition:transform 320ms cubic-bezier(.2,.75,.25,1),filter 240ms ease; }
+        .ph:hover,.ph:focus-visible { border-color:var(--gold); }
+        .ph:hover img,.ph:focus-visible img { transform:scale(1.045); filter:brightness(.96) saturate(1.04); }
+        .ph:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
+        .grid > .ph { animation:gallery-enter .3s ease both; }
+        @keyframes gallery-enter { from { opacity:0; } to { opacity:1; } }
+        .ph .photo-caption { position:absolute; inset:12px auto auto 12px; display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border:0; border-radius:3px; color:var(--bg-dark); background:var(--gold); font:600 13px 'Barlow',sans-serif; letter-spacing:0; text-transform:none; }
+        .ph .photo-caption::before { content:""; width:6px; height:6px; flex:0 0 6px; border-radius:50%; background:var(--olive); }
+        .gallery-skeleton { display:block; width:100%; aspect-ratio:4/3; overflow:hidden; position:relative; border:1px solid var(--border); border-radius:5px; background:var(--olive); }
+        .gallery-skeleton::after { position:absolute; inset:0; content:""; transform:translateX(-100%); background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent); animation:gallery-shimmer 1.4s infinite; }
+        .count-skeleton { display:inline-block; width:76px; height:14px; border-radius:3px; background:var(--olive); vertical-align:middle; position:relative; overflow:hidden; }
+        .count-skeleton::after { content:""; position:absolute; inset:0; transform:translateX(-100%); background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent); animation:gallery-shimmer 1.4s infinite; }
+        @keyframes gallery-shimmer { to { transform:translateX(100%); } }
+        .empty { color:var(--text-muted); padding:48px 20px; text-align:center; }
+        .empty h3 { color:var(--text); font:700 22px 'Barlow Condensed',sans-serif; text-transform:uppercase; margin:12px 0 6px; }
+        .empty p { color:var(--text-soft); font-size:14px; margin:0 0 16px; }
+        @media(max-width:1024px) { .grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+        @media(max-width:640px) { .cats button { flex:1 1 auto; } .count { margin:4px 0 0; } .grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; } }
+        @media(max-width:380px) { .grid { grid-template-columns:1fr; } }
+    </style>
+</head>
+<body class="photo-gallery-page">
+<div id="navbar-placeholder"></div>
+<div class="scroll-container"><div class="scroll-content">
+<div class="page">
+    <div class="kicker">Beeld — Defensiebrandweer</div>
+    <h1>Foto<span>galerij</span></h1>
+    <p class="sub">Alle beelden uit het archief op één plek. Klik een foto om te vergroten.</p>
+    <div class="cats" id="filters" aria-label="Foto's filteren">
+        <button data-f="all" class="active">Alles</button>
+        <button data-f="vehicles">Voertuigen</button>
+        <button data-f="locations">Locaties</button>
+        <button data-f="equipment">Materieel</button>
+        <span class="count" id="count"><span class="count-skeleton" aria-hidden="true"></span></span>
+    </div>
+    <div class="grid" id="grid" aria-label="Foto's laden" aria-busy="true"><span class="gallery-skeleton" aria-hidden="true"></span><span class="gallery-skeleton" aria-hidden="true"></span><span class="gallery-skeleton" aria-hidden="true"></span><span class="gallery-skeleton" aria-hidden="true"></span><span class="gallery-skeleton" aria-hidden="true"></span><span class="gallery-skeleton" aria-hidden="true"></span><span class="gallery-skeleton" aria-hidden="true"></span><span class="gallery-skeleton" aria-hidden="true"></span></div>
+    <div class="empty" id="empty" style="display:none;"><h3>Geen foto's</h3><p>Voor dit filter zijn nog geen beelden beschikbaar.</p></div>
+</div>
+<div id="footer-placeholder"></div>
+</div><div class="custom-scrollbar-body"><div class="scrollbar-thumb"></div></div></div>
+<script>
+    const API = '/api';
+    const MIN_SKELETON_TIME = 650;
+    const loadingStartedAt = performance.now();
+    let photos = [], filter = 'all';
+    const grid = document.getElementById('grid'), empty = document.getElementById('empty'), count = document.getElementById('count');
+    function escapeHtml(value) { return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]); }
+    function collect(items, kind) {
+        (items || []).forEach(it => {
+            if (it.imageUrl) photos.push({ src: it.imageUrl, kind, name: it.naam || it.name || '' });
+            (it.galleryImages || []).forEach(src => photos.push({ src, kind, name: it.naam || it.name || '' }));
+        });
+    }
+    function render() {
+        const list = photos.filter(p => filter === 'all' || p.kind === filter);
+        count.textContent = `${list.length} ${list.length === 1 ? 'foto' : "foto's"}`;
+        if (!list.length) { grid.style.display = 'none'; empty.style.display = 'block'; return; }
+        grid.style.display = 'grid'; empty.style.display = 'none';
+        grid.innerHTML = list.map(p => `<button class="ph" type="button" data-src="${escapeHtml(p.src)}" data-name="${escapeHtml(p.name)}"><img src="${escapeHtml(p.src)}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.parentElement.style.display='none'"><span>${escapeHtml(p.kind)}</span></button>`).join('');
+        grid.removeAttribute('aria-label');
+        grid.removeAttribute('aria-busy');
+        grid.querySelectorAll('.ph').forEach(btn => btn.addEventListener('click', () => {
+            if (window.DefensieModal) window.DefensieModal.open(btn.dataset.src, btn.dataset.name);
+        }));
+    }
+    document.querySelectorAll('#filters button').forEach(b => b.addEventListener('click', () => {
+        document.querySelectorAll('#filters button').forEach(x => x.classList.toggle('active', x === b));
+        filter = b.dataset.f;
+        render();
+    }));
+    document.addEventListener('DOMContentLoaded', async () => {
+        await DefensieLoader.start({ loadingText: 'Foto\'s laden...' });
+        try {
+            const [locs, vehs, eq] = await Promise.all([
+                fetch(`${API}/locations`).then(r => r.ok ? r.json() : []),
+                fetch(`${API}/vehicles`).then(r => r.ok ? r.json() : []),
+                fetch(`${API}/equipment`).then(r => r.ok ? r.json() : [])
+            ]);
+            collect(locs, 'locations');
+            collect(vehs, 'vehicles');
+            collect(eq, 'equipment');
+        } catch (e) {}
+        const elapsed = performance.now() - loadingStartedAt;
+        if (elapsed < MIN_SKELETON_TIME) await new Promise(r => setTimeout(r, MIN_SKELETON_TIME - elapsed));
+        render();
+        await DefensieLoader.stop();
+    });
+</script>
+</body>
+</html>

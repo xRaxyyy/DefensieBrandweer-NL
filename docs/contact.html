@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=block" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - DEFENSIEBRANDWEER NL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Oswald:wght@400;700&display=block" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="js/navbar.js"></script>
+    <script src="js/footer.js"></script>
+    <script src="js/loader.js"></script>
+    <script src="js/scrollbar.js"></script>
+    <style>
+        .page { max-width: 1180px; }
+        .contact-layout { display:grid; grid-template-columns:minmax(250px,.75fr) minmax(0,1.45fr); gap:20px; align-items:start; }
+        .contact-info,.card { padding:28px; color:var(--text); background:var(--surface); border:1px solid var(--border); border-radius:6px; }
+        .contact-info { border-top:3px solid var(--gold); }
+        .info-mark { display:flex; width:48px; height:48px; align-items:center; justify-content:center; margin-bottom:24px; color:var(--gold); background:var(--olive); border:1px solid var(--border); border-radius:4px; font-size:20px; }
+        .contact-info h2,.card h2 { margin:0 0 12px; color:var(--text); font:700 26px 'Barlow Condensed',sans-serif; letter-spacing:.02em; text-transform:uppercase; }
+        .contact-info p,.card > p { color:var(--text-soft); font:400 15px/1.65 'Barlow',sans-serif; }
+        .email-link { display:inline-flex; align-items:center; gap:9px; margin:8px 0 20px; color:var(--gold); font:600 16px 'Barlow',sans-serif; text-decoration:none; overflow-wrap:anywhere; }
+        .email-link:hover { color:#FFD078; text-decoration:underline; text-underline-offset:4px; }
+        .email-link i { display:inline-flex; flex:0 0 auto; align-items:center; justify-content:center; font-size:14px; line-height:1; }
+        .email-link i::before { line-height:1; margin:0; }
+        .info-divider { height:1px; margin:4px 0 18px; background:var(--border); }
+        .contact-info .info-note { color:var(--text-muted); font-size:14px; }
+        .card { padding:30px 32px; }
+        .card h2 { padding-bottom:14px; border-bottom:1px solid var(--border); }
+        .card > p { margin:0; }
+        .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px 16px; margin-top:18px; }
+        .full { grid-column:1 / -1; }
+        .field { display:flex; flex-direction:column; gap:7px; }
+        .field label { color:var(--text-soft); font:600 14px 'Barlow',sans-serif; }
+        .field input,.field textarea,.field select { min-height:46px; padding:11px 13px; color:var(--text); background:var(--bg-dark); border:1px solid var(--border); border-radius:4px; font:400 16px 'Barlow',sans-serif; transition:border-color 150ms,background-color 150ms; }
+        .field input::placeholder,.field textarea::placeholder { color:#87907A; }
+        .field input:focus,.field textarea:focus,.field select:focus { outline:none; border-color:var(--gold); background:#11140D; }
+        .field textarea { min-height:150px; resize:vertical; }
+        .topics { display:flex; flex-wrap:wrap; gap:7px; margin:2px 0 0; }
+        .topics button { min-height:40px; padding:8px 13px; color:var(--text-soft); background:var(--surface); border:1px solid var(--border); border-radius:4px; font:600 14px 'Barlow',sans-serif; cursor:pointer; transition:background-color 150ms,color 150ms,border-color 150ms; }
+        .topics button:hover { color:#FFD078; background:var(--olive); border-color:var(--gold); }
+        .topics button.active { color:#fff; background:var(--blue); border-color:var(--blue); }
+        .topics button:active { transform:none; }
+        .send { display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:48px; margin-block:8px; padding:12px 18px; color:#fff; background:var(--red); border:1px solid var(--red); border-radius:4px; font:600 16px 'Barlow',sans-serif; cursor:pointer; transition:filter 150ms; }
+        .send:hover { color:#fff; background:var(--red); filter:brightness(1.12); }
+        .send i { display:inline-flex; align-items:center; justify-content:center; }
+        .send i::before { line-height:1; margin:0; }
+        .note { margin-top:24px; color:var(--text-muted); font:400 13px/1.7 'Barlow',sans-serif; }
+        .ok { display:none; margin-top:16px; padding:14px 16px; color:var(--text); background:var(--olive); border:1px solid var(--gold); border-radius:4px; font:500 15px/1.6 'Barlow',sans-serif; }
+        .ok a { color:var(--gold); }
+        @media(max-width:900px) { .contact-layout { grid-template-columns:1fr; } .contact-info { order:2; } }
+        @media(max-width:640px) { .page { padding:112px 20px 60px; } .page h1 { font-size:46px; } .sub { font-size:17px; margin-bottom:28px; } .card,.contact-info { padding:22px 18px; } .form-grid { grid-template-columns:1fr; gap:16px; } .full { grid-column:auto; } .send { grid-column:auto; } }
+        @media(prefers-reduced-motion:reduce) { .contact-page *, .contact-page *::before, .contact-page *::after { animation-duration:.01ms !important; transition-duration:.01ms !important; } }
+    </style>
+</head>
+<body class="contact-page">
+<div id="navbar-placeholder"></div>
+<div class="scroll-container"><div class="scroll-content">
+<div class="page">
+    <div class="kicker">Contact — Defensiebrandweer</div>
+    <h1>Contact</h1>
+    <p class="sub">Vragen, opmerkingen of informatie? Neem contact op.</p>
+    <div class="contact-layout">
+        <aside class="contact-info">
+            <div class="info-mark"><i class="fi fi-rr-shield"></i></div>
+            <h2>Contactgegevens</h2>
+            <p>Heb je een vraag of wil je informatie delen? Stuur een e-mail.</p>
+            <a class="email-link" href="mailto:info@defensiebrandweer.nl"><i class="fi fi-rr-envelope"></i> info@defensiebrandweer.nl</a>
+            <div class="info-divider"></div>
+            <p class="info-note">Geen officiële website van het Ministerie van Defensie.</p>
+        </aside>
+        <div class="card">
+            <h2>Stuur een bericht</h2>
+            <p>Vul het formulier in en je mailprogramma opent met je bericht.</p>
+            <form class="form-grid" onsubmit="event.preventDefault(); document.getElementById('contactOk').style.display='block';">
+                <div class="field"><label>Onderwerp</label><input type="text" placeholder="Onderwerp"></div>
+                <div class="field full"><label>Bericht</label><textarea placeholder="Je bericht..."></textarea></div>
+                <button class="send" type="submit"><i class="fi fi-rr-paper-plane"></i>Verstuur via e-mail</button>
+            </form>
+            <div class="ok" id="contactOk" role="status" aria-live="polite">Bedankt! Je mailprogramma opent nu met je bericht. Liever zelf mailen? <a href="mailto:info@defensiebrandweer.nl">info@defensiebrandweer.nl</a></div>
+        </div>
+    </div>
+</div>
+<div id="footer-placeholder"></div>
+</div><div class="custom-scrollbar-body"><div class="scrollbar-thumb"></div></div></div>
+</body>
+</html>
